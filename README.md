@@ -17,9 +17,36 @@ module.exports = function (options) {
 }
 ```
 
-- config loading: standardize on yaml configs (`config.yaml` and
-    `config.example.yaml`) with a few standard top-level values (`port`,
-    `interface`, `num_workers`)
+- [config loading](#config_loading)
 - logging using bunyan & gelf
 - metric reporting using txstatsd
 - heap dumps
+
+### Config loading
+- Default config locations in a project: `config.yaml` for a customized config,
+    and `config.example.yaml` for the defaults.
+- Default top-level config format (**draft**):
+
+```yaml
+num_workers: 1
+
+# Logger info
+logging:
+  level: info
+  streams:
+  # Use gelf-stream -> logstash
+  - type: gelf
+    host: <%= @logstash_host %>
+    port: <%= @logstash_port %>
+
+# Statsd metrics reporter
+metrics:
+  statsdHost: localhost:8125
+
+services:
+  - name: someService
+    module: ./lib/server.js
+    port: 12345
+    interface: localhost
+    # more per-service config settings
+```
