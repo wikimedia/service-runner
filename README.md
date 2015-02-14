@@ -50,3 +50,8 @@ services:
     interface: localhost
     # more per-service config settings
 ```
+
+# See also
+- https://github.com/strongloop/strong-agent
+- http://krakenjs.com/ - Focused more on MVC & templating rather than
+    supervision & modules
