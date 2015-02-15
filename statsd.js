@@ -2,11 +2,11 @@
 var TXStatsD = require('node-txstatsd');
 
 // StatsD wrapper
-function StatsD(statsdHost, statsdPort) {
+function StatsD(statsdHost, statsdPort, name) {
     this.statsd = new TXStatsD({
         host: statsdHost,
         port: statsdPort,
-        prefix: 'restbase.routes.',
+        prefix: name + '.',
         suffix: '',
         txstatsd  : true,
         globalize : false,
