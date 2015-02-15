@@ -4,49 +4,25 @@ var bunyan = require('bunyan');
 var gelf_stream = require('gelf-stream');
 
 
-var levels = ['trace','debug','info','warn','error','fatal'];
-function levelToMatcher (level) {
-    var pos = levels.indexOf(level);
-    if (pos !== -1) {
-        return new RegExp('^(' + levels.slice(pos).join('|') + ')(?=\/|$)');
-    } else {
-        // Match nothing
-        return /^$/;
-    }
-}
-
 // Simple bunyan logger wrapper
-function Logger (conf, logger, args) {
-    this.conf = conf;
-    this.logger = logger || bunyan.createLogger(conf);
-    this.level = conf && conf.level || 'warn';
-    this.levelMatcher = levelToMatcher(this.level);
+function Logger (confOrLogger, args) {
+    if (confOrLogger.constructor !== Logger) {
+        // Create a new root logger
+        var conf = this._processConf(confOrLogger);
+        this._logger = confOrLogger || bunyan.createLogger(conf);
+        var level = conf && conf.level || 'warn';
+        this._levelMatcher = this.levelToMatcher(this.level);
+
+        // Set up handlers for uncaught extensions
+        this._setupRootHandlers();
+    } else {
+        this._logger = confOrLogger._logger;
+        this._levelMatcher = confOrLogger._levelMatcher;
+    }
     this.args = args;
 }
 
-
-
-Logger.prototype.log = function (level) {
-    var levelMatch = this.levelMatcher.exec(level);
-    if (levelMatch) {
-        var logger = this.logger;
-        var simpleLevel = levelMatch[1];
-        var params = Array.prototype.slice.call(arguments, 1);
-        if (params.length && params[0] && typeof params[0] === 'object') {
-            // Got an object
-            //
-            // Inject the detailed levelpath.
-            // 'level' is already used for the numeric level.
-            params[0].levelPath = level;
-
-            // Also pass in default parameters
-            params[0] = extend({}, this.args, params[0]);
-        }
-        logger[simpleLevel].apply(logger, params);
-    }
-};
-
-function makeLogger(conf) {
+Logger.prototype._processConf = function(conf) {
     if (Array.isArray(conf.streams)) {
         var streams = [];
         conf.streams.forEach(function(stream) {
@@ -64,23 +40,17 @@ function makeLogger(conf) {
         conf = extend({}, conf);
         conf.streams = streams;
     }
-    var newLogger = new Logger(conf);
-    function bindAndChild (logger) {
-        var log = logger.log.bind(logger);
-        log.child = function(args) {
-            return bindAndChild(new Logger(conf, logger.logger, args));
-        };
-        return log;
-    }
-    var res = bindAndChild(newLogger);
+    return conf;
+};
 
+Logger.prototype._setupRootHandlers = function() {
+    var self = this;
     // Avoid recursion if there are bugs in the logging code.
     var inLogger = false;
-
     function logUnhandledException (err) {
         if (!inLogger) {
             inLogger = true;
-            res('error/restbase/unhandled',  err);
+            self.log('fatal/unhandled',  err);
             inLogger = false;
         }
     }
@@ -93,8 +63,43 @@ function makeLogger(conf) {
         logUnhandledException(err);
         process.exit(1);
     });
-    return res;
-}
+};
 
-// TODO: Use constructor instead?
-module.exports = makeLogger;
+var levels = ['trace','debug','info','warn','error','fatal'];
+Logger.prototype._levelToMatcher = function levelToMatcher (level) {
+    var pos = levels.indexOf(level);
+    if (pos !== -1) {
+        return new RegExp('^(' + levels.slice(pos).join('|') + ')(?=\/|$)');
+    } else {
+        // Match nothing
+        return /^$/;
+    }
+};
+
+Logger.prototype.child = function (args) {
+    var newArgs = extend({}, this.args, args);
+    return new Logger(this, newArgs);
+};
+
+Logger.prototype.log = function (level) {
+    var levelMatch = this._levelMatcher.exec(level);
+    if (levelMatch) {
+        var logger = this._logger;
+        var simpleLevel = levelMatch[1];
+        var params = Array.prototype.slice.call(arguments, 1);
+        if (params.length && params[0] && typeof params[0] === 'object') {
+            // Got an object
+            //
+            // Inject the detailed levelpath.
+            // 'level' is already used for the numeric level.
+            params[0].levelPath = level;
+
+            // Also pass in default parameters
+            params[0] = extend({}, this.args, params[0]);
+        }
+        logger[simpleLevel].apply(logger, params);
+    }
+};
+
+
+module.exports = Logger;
