@@ -1,37 +1,32 @@
 {
-	"predef": [
-		"ve",
+    "predef": [
+        "setImmediate",
+        "Map",
+        "Set"
+    ],
 
-		"setImmediate",
+    "bitwise": true,
+    "laxbreak": true,
+    "curly": true,
+    "eqeqeq": true,
+    "immed": true,
+    "latedef": true,
+    "newcap": true,
+    "noarg": true,
+    "noempty": true,
+    "nonew": true,
+    "regexp": false,
+    "undef": true,
+    "strict": true,
+    "trailing": true,
 
-		"QUnit",
+    "smarttabs": true,
+    "multistr": true,
 
-		"Map",
-		"Set"
-	],
+    "node": true,
 
-	"bitwise": true,
-	"laxbreak": true,
-	"curly": true,
-	"eqeqeq": true,
-	"immed": true,
-	"latedef": true,
-	"newcap": true,
-	"noarg": true,
-	"noempty": true,
-	"nonew": true,
-	"regexp": false,
-	"undef": true,
-	"strict": true,
-	"trailing": true,
-
-	"smarttabs": true,
-	"multistr": true,
-
-	"node": true,
-
-	"nomen": false,
-	"loopfunc": true,
-        "esnext": true
-	//"onevar": true
+    "nomen": false,
+    "loopfunc": true,
+    "esnext": true
+    //"onevar": true
 }
