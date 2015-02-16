@@ -1,8 +1,8 @@
 {
-  "name": "supervisoid",
+  "name": "servisor",
   "version": "0.0.0",
   "description": "Generic nodejs service supervisor / cluster runner",
-  "main": "supervisoid.js",
+  "main": "servisor.js",
   "scripts": {
     "test": "mocha",
     "coverage": "sh test/utils/cleandb.sh && istanbul cover _mocha -- -R spec",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/wikimedia/supervisoid.git"
+    "url": "git://github.com/wikimedia/servisor.git"
   },
   "keywords": [
       "supervisor",
@@ -21,9 +21,9 @@
   "author": "Wikimedia service team <services@wikimedia.org>",
   "license": "Apache2",
   "bugs": {
-    "url": "https://github.com/wikimedia/supervisoid/issues"
+    "url": "https://github.com/wikimedia/servisor/issues"
   },
-  "homepage": "https://github.com/wikimedia/supervisoid",
+  "homepage": "https://github.com/wikimedia/servisor",
   "dependencies": {
     "bluebird": "~2.2.2",
     "es6-collections": "^0.4.1",

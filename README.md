@@ -1,4 +1,4 @@
-# supervisoid
+# servisor
 Generic nodejs service supervisor
 
 ## Goals
