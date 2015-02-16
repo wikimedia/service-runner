@@ -180,7 +180,7 @@ Servisor.prototype._getOptions = function (opts) {
             // systems. A single long-running request would otherwise hold up
             // all concurrent short requests.
             n: require( "os" ).cpus().length,
-            c: __dirname + '/config.yaml',
+            c: './config.yaml',
 
             v: false,
             h: false
