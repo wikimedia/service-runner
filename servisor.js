@@ -66,6 +66,10 @@ Servisor.prototype.updateConfig = function updateConfig (conf) {
         return fs.readFileAsync(this.options.configFile)
         .then(function(yamlSource) {
             self.config = yaml.safeLoad(yamlSource);
+            // TODO: Perform proper validation!
+            var conf = self.config;
+            if (!conf.logging) { conf.logging = {}; }
+            if (!conf.metrics) { conf.metrics = {}; }
         })
         .catch(function(e) {
             console.error('Error while reading config file: ' + e);
