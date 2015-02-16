@@ -63,7 +63,12 @@ Servisor.prototype.updateConfig = function updateConfig (conf) {
         self.config = conf;
         return Promise.resolve(conf);
     } else {
-        return fs.readFileAsync(this.options.configFile)
+        var configFile = this.options.configFile;
+        if (/^\./.test(configFile)) {
+            // resolve relative paths
+            configFile = path.resolve(configFile);
+        }
+        return fs.readFileAsync(configFile)
         .then(function(yamlSource) {
             self.config = yaml.safeLoad(yamlSource);
             // TODO: Perform proper validation!
@@ -132,6 +137,10 @@ Servisor.prototype._runWorker = function() {
     // Require service modules and start them
     return Promise.all(this.config.services.map(function(service) {
         var modName = service.module || service.name;
+        if (/^\./.test(modName)) {
+            // resolve relative paths
+            modName = path.resolve(modName);
+        }
         var svcMod;
         try {
             svcMod = require(modName);
