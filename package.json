@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "servisor.js",
+  "bin": {
+      "servisor": "./servisor.js"
+  },
   "scripts": {
     "test": "mocha",
     "coverage": "sh test/utils/cleandb.sh && istanbul cover _mocha -- -R spec",
