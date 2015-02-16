@@ -1,4 +1,4 @@
-# supervisoid
+# servisor
 Generic nodejs service supervisor
 
 ## Goals
@@ -28,6 +28,22 @@ module.exports = function (options) {
 - Default top-level config format (**draft**):
 
 ```yaml
+# Info about this config. Used for packaging & other purposes.
+info: 
+  name: parsoid
+  version: 0.4.0
+  description: Bidirectional conversion service between MediaWiki wikitext and
+        HTML5
+
+# Package settings. Modeled on Debian, but likely to transfer to rpm as well.
+packaging:
+  depends:
+    nodejs: >=0.10.0
+  enhances: mediawiki
+
+
+# Number of worker processes to spawn. 
+# Set to 0 to run everything in a single process without clustering.
 num_workers: 1
 
 # Logger info
@@ -36,22 +52,35 @@ logging:
   streams:
   # Use gelf-stream -> logstash
   - type: gelf
-    host: <%= @logstash_host %>
-    port: <%= @logstash_port %>
+    host: logstash1003.eqiad.wmnet
+    port: 12201
 
 # Statsd metrics reporter
 metrics:
-  statsdHost: localhost:8125
+  type: txstatsd
+  host: localhost:8125
 
 services:
-  - name: someService
-    module: ./lib/server.js
-    port: 12345
-    interface: localhost
-    # more per-service config settings
+  - name: parsoid
+    # a relative path or the name of an npm package, if different from name
+    # module: ./lib/server.js
+
+    # optionally, a version constraint of the npm package
+    # version: ^0.4.0
+    
+    # per-service config
+    conf:
+        port: 12345
+        interface: localhost
+        # more per-service config settings
 ```
 
 # See also
-- https://github.com/strongloop/strong-agent
+- https://github.com/Unitech/PM2/ - A lot of features. Focus on interactive
+    use with commandline tools. Weak on logging (only local log files). Does
+    not support node 0.10's cluster module.
+- https://github.com/strongloop/strong-agent - commercial license. Focus on
+    profiling and monitoring, although a lot of the functionality is now
+    available in other libraries.
 - http://krakenjs.com/ - Focused more on MVC & templating rather than
     supervision & modules
