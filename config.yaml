@@ -1,4 +1,3 @@
-
 # Info about this config. Used for packaging & other purposes.
 info: 
   name: parsoid
@@ -34,7 +33,7 @@ metrics:
 services:
   - name: test
     # a relative path or the name of an npm package, if different from name
-    module: ./test.js
+    module: ./test/httpserver.js
 
     # optionally, a version constraint of the npm package
     # version: ^0.4.0
