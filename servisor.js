@@ -57,10 +57,17 @@ Servisor.prototype.run = function run (conf) {
     });
 };
 
+Servisor.prototype._sanitizeConfig = function (conf) {
+    // TODO: Perform proper validation!
+    if (!conf.logging) { conf.logging = {}; }
+    if (!conf.metrics) { conf.metrics = {}; }
+    return conf;
+};
+
 Servisor.prototype.updateConfig = function updateConfig (conf) {
     var self = this;
     if (conf) {
-        self.config = conf;
+        self.config = this._sanitizeConfig(conf);
         return Promise.resolve(conf);
     } else {
         var configFile = this.options.configFile;
@@ -70,11 +77,7 @@ Servisor.prototype.updateConfig = function updateConfig (conf) {
         }
         return fs.readFileAsync(configFile)
         .then(function(yamlSource) {
-            self.config = yaml.safeLoad(yamlSource);
-            // TODO: Perform proper validation!
-            var conf = self.config;
-            if (!conf.logging) { conf.logging = {}; }
-            if (!conf.metrics) { conf.metrics = {}; }
+            self.config = self._sanitizeConfig(yaml.safeLoad(yamlSource));
         })
         .catch(function(e) {
             console.error('Error while reading config file: ' + e);
