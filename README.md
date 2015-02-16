@@ -76,6 +76,11 @@ services:
 ```
 
 # See also
-- https://github.com/strongloop/strong-agent
+- https://github.com/Unitech/PM2/ - A lot of features. Focus on interactive
+    use with commandline tools. Weak on logging (only local log files). Does
+    not support node 0.10's cluster module.
+- https://github.com/strongloop/strong-agent - commercial license. Focus on
+    profiling and monitoring, although a lot of the functionality is now
+    available in other libraries.
 - http://krakenjs.com/ - Focused more on MVC & templating rather than
     supervision & modules
