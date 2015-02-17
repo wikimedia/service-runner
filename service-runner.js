@@ -8,12 +8,16 @@
 "use strict";
 
 // Upgrade to es6
-require('./lib/es6');
+require('es6-shim');
+
+// Use bluebird internally. Use P.resolve(es6Promise) to convert an incoming
+// Promise to a bluebird Promise.
+var P = require('bluebird');
 
 var cluster = require('cluster');
 var path = require('path');
 var yaml = require('js-yaml');
-var fs = Promise.promisifyAll(require('fs'));
+var fs = P.promisifyAll(require('fs'));
 var os = require('os');
 
 
@@ -78,7 +82,7 @@ ServiceRunner.prototype.updateConfig = function updateConfig (conf) {
     var self = this;
     if (conf) {
         self.config = this._sanitizeConfig(conf, self.options);
-        return Promise.resolve(conf);
+        return P.resolve(conf);
     } else {
         var configFile = this.options.configFile;
         if (/^\./.test(configFile)) {
@@ -150,7 +154,7 @@ ServiceRunner.prototype._runWorker = function() {
     });
 
     // Require service modules and start them
-    return Promise.all(this.config.services.map(function(service) {
+    return P.all(this.config.services.map(function(service) {
         var modName = service.module || service.name;
         if (/^\./.test(modName)) {
             // resolve relative paths
@@ -161,7 +165,7 @@ ServiceRunner.prototype._runWorker = function() {
             svcMod = require(modName);
         } catch (e) {
             e.moduleName = modName;
-            return Promise.reject(e);
+            return P.reject(e);
         }
 
         var opts = {
@@ -173,7 +177,7 @@ ServiceRunner.prototype._runWorker = function() {
             metrics: self._metrics
         };
 
-        return Promise.try(function() {
+        return P.try(function() {
             return svcMod(opts);
         });
     }))
