@@ -67,7 +67,7 @@ Servisor.prototype._sanitizeConfig = function (conf, options) {
         // the number of workers has been supplied
         // on the command line, so honour that
         conf.num_workers = options.num_workers;
-    } else if(conf.num_workers === 'ncpu') {
+    } else if(conf.num_workers === 'ncpu' || typeof conf.num_workers !== 'number') {
         // use the number of CPUs
         conf.num_workers = os.cpus().length;
     }
