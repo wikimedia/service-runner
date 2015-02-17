@@ -61,6 +61,10 @@ Servisor.prototype._sanitizeConfig = function (conf) {
     // TODO: Perform proper validation!
     if (!conf.logging) { conf.logging = {}; }
     if (!conf.metrics) { conf.metrics = {}; }
+    if (conf.numWorkers === undefined) {
+        // Let the config win, but respect the parameter
+        conf.numWorkers = this.options.numWorkers;
+    }
     return conf;
 };
 
@@ -184,7 +188,7 @@ Servisor.prototype._getOptions = function (opts) {
             // so that we get some degree of parallelism even on single-core
             // systems. A single long-running request would otherwise hold up
             // all concurrent short requests.
-            n: require( "os" ).cpus().length,
+            n: require("os").cpus().length,
             c: './config.yaml',
 
             v: false,
