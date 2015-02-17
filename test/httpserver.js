@@ -18,6 +18,6 @@ module.exports = function (opts) {
                 });
                 res.end('okay');
             }
-        }).listen(8888, resolve);
+        }).listen(opts.config.port || 8888, opts.config.interface || '0.0.0.0', resolve);
     });
 };

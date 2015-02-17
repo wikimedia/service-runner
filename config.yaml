@@ -40,6 +40,6 @@ services:
     
     # per-service config
     conf:
-        port: 12345
-        interface: localhost
-        # more per-service config settings
+      port: 12345
+      interface: localhost
+      # more per-service config settings
