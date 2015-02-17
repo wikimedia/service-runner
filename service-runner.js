@@ -186,7 +186,7 @@ ServiceRunner.prototype._runWorker = function() {
 
 ServiceRunner.prototype._getOptions = function (opts) {
     // check process arguments
-    var args = require( "yargs" )
+    var argParser = require( "yargs" )
         .usage( "Usage: $0 [-h|-v] [--param[=val]]" )
         .default({
 
@@ -205,12 +205,12 @@ ServiceRunner.prototype._getOptions = function (opts) {
             .alias( "h", "help" )
             .alias( "v", "version" )
             .alias( "c", "config" )
-            .alias( "n", "num-workers" )
-        .argv;
+            .alias( "n", "num-workers" );
+    var args = argParser.argv;
 
     // help
     if ( args.h ) {
-        opts.showHelp();
+        argParser.showHelp();
         process.exit( 0 );
     }
 
