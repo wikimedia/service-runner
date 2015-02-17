@@ -62,13 +62,13 @@ Servisor.prototype._sanitizeConfig = function (conf, options) {
     if (!conf.logging) { conf.logging = {}; }
     if (!conf.metrics) { conf.metrics = {}; }
     // check the number of workers to run
-    if(options.numWorkers !== -1) {
+    if(options.num_workers !== -1) {
         // the number of workers has been supplied
         // on the command line, so honour that
-        conf.num_workers = options.numWorkers;
+        conf.num_workers = options.num_workers;
     } else if(conf.num_workers === 'ncpu') {
         // use the number of CPUs
-        conf.num_workers = options.defNumWorkers;
+        conf.num_workers = require('os').cpus().length;
     }
     return conf;
 };
@@ -222,8 +222,7 @@ Servisor.prototype._getOptions = function (opts) {
     if (!opts) {
         // Use args
         opts = {
-            numWorkers: args.n,
-            defNumWorkers: require( "os" ).cpus().length,
+            num_workers: args.n,
             configFile: args.c
         };
     }
