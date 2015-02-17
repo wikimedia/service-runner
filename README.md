@@ -1,5 +1,5 @@
-# servisor
-Generic nodejs service supervisor
+# service-runner
+Generic nodejs service runner & supervisor
 
 ## Goals
 - Supervise and cluster node services in a generic manner with a minimal interface:

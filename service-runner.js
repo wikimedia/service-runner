@@ -27,7 +27,7 @@ var StatsD = require('./lib/statsd');
 cluster.schedulingPolicy = cluster.SCHED_NONE;
 
 
-function Servisor(options) {
+function ServiceRunner(options) {
     this.options = this._getOptions(options);
 
     this._config = null;
@@ -35,12 +35,12 @@ function Servisor(options) {
     this._metrics = null;
 }
 
-Servisor.prototype.run = function run (conf) {
+ServiceRunner.prototype.run = function run (conf) {
     var self = this;
     return this.updateConfig(conf)
     .then(function() {
         var config = self.config;
-        var name = config.info && config.info.name || 'servisor';
+        var name = config.info && config.info.name || 'service-runner';
         // Set up the logger
         if (!config.logging.name) {
             config.logging.name = name;
@@ -58,7 +58,7 @@ Servisor.prototype.run = function run (conf) {
     });
 };
 
-Servisor.prototype._sanitizeConfig = function (conf, options) {
+ServiceRunner.prototype._sanitizeConfig = function (conf, options) {
     // TODO: Perform proper validation!
     if (!conf.logging) { conf.logging = {}; }
     if (!conf.metrics) { conf.metrics = {}; }
@@ -74,7 +74,7 @@ Servisor.prototype._sanitizeConfig = function (conf, options) {
     return conf;
 };
 
-Servisor.prototype.updateConfig = function updateConfig (conf) {
+ServiceRunner.prototype.updateConfig = function updateConfig (conf) {
     var self = this;
     if (conf) {
         self.config = this._sanitizeConfig(conf, self.options);
@@ -96,10 +96,10 @@ Servisor.prototype.updateConfig = function updateConfig (conf) {
     }
 };
 
-Servisor.prototype._runMaster = function() {
+ServiceRunner.prototype._runMaster = function() {
     var self = this;
     // Fork workers.
-    this._logger.log('info/servisor', 'master(' + process.pid + ') initializing '
+    this._logger.log('info/service-runner', 'master(' + process.pid + ') initializing '
             + this.config.num_workers + ' workers');
 
     for (var i = 0; i < this.config.num_workers; i++) {
@@ -109,7 +109,7 @@ Servisor.prototype._runMaster = function() {
     cluster.on('exit', function(worker, code, signal) {
         if (!worker.suicide) {
             var exitCode = worker.process.exitCode;
-            self._logger.log('error/servisor/master',
+            self._logger.log('error/service-runner/master',
                     'worker' + worker.process.pid
                     + 'died (' + exitCode + '), restarting.');
             cluster.fork();
@@ -117,9 +117,9 @@ Servisor.prototype._runMaster = function() {
     });
 
     var shutdown_master = function() {
-        self._logger.log('info/servisor/master', 'master shutting down, killing workers');
+        self._logger.log('info/service-runner/master', 'master shutting down, killing workers');
         cluster.disconnect(function() {
-            self._logger.log('info/servisor/master', 'Exiting master');
+            self._logger.log('info/service-runner/master', 'Exiting master');
             process.exit(0);
         });
     };
@@ -128,11 +128,11 @@ Servisor.prototype._runMaster = function() {
     process.on('SIGTERM', shutdown_master);
 };
 
-Servisor.prototype._runWorker = function() {
+ServiceRunner.prototype._runWorker = function() {
     var self = this;
     // Worker.
     process.on('SIGTERM', function() {
-        self._logger.log('info/servisor/worker', 'Worker ' + process.pid + ' shutting down');
+        self._logger.log('info/service-runner/worker', 'Worker ' + process.pid + ' shutting down');
         process.exit(0);
     });
 
@@ -178,13 +178,13 @@ Servisor.prototype._runWorker = function() {
         });
     }))
     .catch(function(e) {
-        self._logger.log('fatal/servisor/worker', e);
+        self._logger.log('fatal/service-runner/worker', e);
         process.exit(1);
     });
 };
 
 
-Servisor.prototype._getOptions = function (opts) {
+ServiceRunner.prototype._getOptions = function (opts) {
     // check process arguments
     var args = require( "yargs" )
         .usage( "Usage: $0 [-h|-v] [--param[=val]]" )
@@ -236,10 +236,10 @@ Servisor.prototype._getOptions = function (opts) {
 
 
 
-module.exports = Servisor;
+module.exports = ServiceRunner;
 
 
 if (module.parent === null) {
     // Run as a script: Start up
-    return new Servisor().run();
+    return new ServiceRunner().run();
 }
