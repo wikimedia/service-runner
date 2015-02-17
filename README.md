@@ -17,10 +17,46 @@ module.exports = function (options) {
 }
 ```
 
+- standard command line parameters:
+```bash
+Usage: node ./service-runner.js [-h|-v] [--param[=val]]
+
+Options:
+  -n, --num-workers  [default: -1]
+  -c, --config       [default: "./config.yaml"]
+  -v, --version      [default: false]
+  -h, --help         [default: false]
+```
 - [config loading](#config_loading)
-- logging using bunyan & gelf
+- flexible logging using bunyan, including logstash support via gelf
 - metric reporting using txstatsd
 - heap dumps
+
+## Usage
+```bash
+npm install --save service-runner
+```
+
+In package.json, configure `npm start` to call service-runner:
+```javascript
+  "scripts": {
+    "start": "service-runner"
+  }
+```
+Create a `config.yaml` file following the spec below. Make sure to point the
+module parameter to your service's entry point.
+
+Finally, **start your service with `npm start`**. In npm >= 2.0 (node 0.12 or iojs), you can also pass parameters to `service-runner` like this: `npm start -- -c /etc/yourservice/config.yaml`.
+
+For node 0.10 support, you can create a small wrapper script like this:
+```javascript
+var ServiceRunner = require('service-runner');
+new ServiceRunner().run();
+```
+
+We are also working on a [standard
+template](https://github.com/wikimedia/service-template-node) for node
+services, which will set up this & other things for you.
 
 ### Config loading
 - Default config locations in a project: `config.yaml` for a customized config,
