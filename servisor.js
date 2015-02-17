@@ -14,6 +14,7 @@ var cluster = require('cluster');
 var path = require('path');
 var yaml = require('js-yaml');
 var fs = Promise.promisifyAll(require('fs'));
+var os = require('os');
 
 
 var Logger = require('./lib/logger');
@@ -68,7 +69,7 @@ Servisor.prototype._sanitizeConfig = function (conf, options) {
         conf.num_workers = options.num_workers;
     } else if(conf.num_workers === 'ncpu') {
         // use the number of CPUs
-        conf.num_workers = require('os').cpus().length;
+        conf.num_workers = os.cpus().length;
     }
     return conf;
 };
