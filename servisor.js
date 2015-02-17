@@ -132,9 +132,11 @@ Servisor.prototype._runWorker = function() {
     // For 0.10: npm install heapdump
     process.on('SIGUSR2', function() {
         var heapdump = require('heapdump');
+        var cwd = process.cwd();
         console.error('SIGUSR2 received! Writing snapshot.');
         process.chdir('/tmp');
         heapdump.writeSnapshot();
+        process.chdir(cwd);
     });
 
     // Require service modules and start them
