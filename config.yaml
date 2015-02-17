@@ -14,7 +14,8 @@ packaging:
 
 # Number of worker processes to spawn. 
 # Set to 0 to run everything in a single process without clustering.
-num_workers: 1
+# Use 'ncpu' to run as many workers as there are CPU units
+num_workers: ncpu
 
 # Logger info
 logging:

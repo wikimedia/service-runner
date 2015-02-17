@@ -14,6 +14,7 @@ var cluster = require('cluster');
 var path = require('path');
 var yaml = require('js-yaml');
 var fs = Promise.promisifyAll(require('fs'));
+var os = require('os');
 
 
 var Logger = require('./lib/logger');
@@ -49,7 +50,7 @@ Servisor.prototype.run = function run (conf) {
         config.metrics.name = name;
         self._metrics = new StatsD(config.metrics);
 
-        if (cluster.isMaster && config.numWorkers > 0) {
+        if (cluster.isMaster && config.num_workers > 0) {
             return self._runMaster();
         } else {
             return self._runWorker();
@@ -57,17 +58,26 @@ Servisor.prototype.run = function run (conf) {
     });
 };
 
-Servisor.prototype._sanitizeConfig = function (conf) {
+Servisor.prototype._sanitizeConfig = function (conf, options) {
     // TODO: Perform proper validation!
     if (!conf.logging) { conf.logging = {}; }
     if (!conf.metrics) { conf.metrics = {}; }
+    // check the number of workers to run
+    if(options.num_workers !== -1) {
+        // the number of workers has been supplied
+        // on the command line, so honour that
+        conf.num_workers = options.num_workers;
+    } else if(conf.num_workers === 'ncpu' || typeof conf.num_workers !== 'number') {
+        // use the number of CPUs
+        conf.num_workers = os.cpus().length;
+    }
     return conf;
 };
 
 Servisor.prototype.updateConfig = function updateConfig (conf) {
     var self = this;
     if (conf) {
-        self.config = this._sanitizeConfig(conf);
+        self.config = this._sanitizeConfig(conf, self.options);
         return Promise.resolve(conf);
     } else {
         var configFile = this.options.configFile;
@@ -77,7 +87,7 @@ Servisor.prototype.updateConfig = function updateConfig (conf) {
         }
         return fs.readFileAsync(configFile)
         .then(function(yamlSource) {
-            self.config = self._sanitizeConfig(yaml.safeLoad(yamlSource));
+            self.config = self._sanitizeConfig(yaml.safeLoad(yamlSource), self.options);
         })
         .catch(function(e) {
             console.error('Error while reading config file: ' + e);
@@ -90,9 +100,9 @@ Servisor.prototype._runMaster = function() {
     var self = this;
     // Fork workers.
     this._logger.log('info/servisor', 'master(' + process.pid + ') initializing '
-            + this.config.numWorkers + ' workers');
+            + this.config.num_workers + ' workers');
 
-    for (var i = 0; i < this.config.numWorkers; i++) {
+    for (var i = 0; i < this.config.num_workers; i++) {
         cluster.fork();
     }
 
@@ -184,7 +194,7 @@ Servisor.prototype._getOptions = function (opts) {
             // so that we get some degree of parallelism even on single-core
             // systems. A single long-running request would otherwise hold up
             // all concurrent short requests.
-            n: require( "os" ).cpus().length,
+            n: -1,
             c: './config.yaml',
 
             v: false,
@@ -215,7 +225,7 @@ Servisor.prototype._getOptions = function (opts) {
     if (!opts) {
         // Use args
         opts = {
-            numWorkers: args.n,
+            num_workers: args.n,
             configFile: args.c
         };
     }
