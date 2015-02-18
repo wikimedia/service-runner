@@ -37,6 +37,10 @@ function ServiceRunner(options) {
     this._config = null;
     this._logger = null;
     this._metrics = null;
+
+    // Figure out the base path
+    this._basePath = /\/node_modules\/service-runner$/.test(__dirname) ?
+        path.resolve(__dirname + '/../../') : path.resolve('./');
 }
 
 ServiceRunner.prototype.run = function run (conf) {
@@ -87,7 +91,7 @@ ServiceRunner.prototype.updateConfig = function updateConfig (conf) {
         var configFile = this.options.configFile;
         if (/^\./.test(configFile)) {
             // resolve relative paths
-            configFile = path.resolve(configFile);
+            configFile = path.resolve(self._basePath + '/' + configFile);
         }
         return fs.readFileAsync(configFile)
         .then(function(yamlSource) {
@@ -158,7 +162,7 @@ ServiceRunner.prototype._runWorker = function() {
         var modName = service.module || service.name;
         if (/^\./.test(modName)) {
             // resolve relative paths
-            modName = path.resolve(modName);
+            modName = path.resolve(self._basePath + '/' + modName);
         }
         var svcMod;
         try {

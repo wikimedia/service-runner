@@ -27,7 +27,7 @@ Options:
   -v, --version      [default: false]
   -h, --help         [default: false]
 ```
-- [config loading](#config_loading)
+- [config loading](#config-loading)
 - flexible logging using bunyan, including logstash support via gelf
 - metric reporting using txstatsd
 - heap dumps
@@ -94,7 +94,8 @@ logging:
 # Statsd metrics reporter
 metrics:
   type: txstatsd
-  host: localhost:8125
+  host: localhost
+  port: 8125
 
 services:
   - name: parsoid
