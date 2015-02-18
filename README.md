@@ -27,7 +27,7 @@ Options:
   -v, --version      [default: false]
   -h, --help         [default: false]
 ```
-- [config loading](#config_loading)
+- [config loading](#config-loading)
 - flexible logging using bunyan, including logstash support via gelf
 - metric reporting using txstatsd
 - heap dumps
