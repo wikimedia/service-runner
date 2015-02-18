@@ -8,7 +8,7 @@
 "use strict";
 
 // Upgrade to es6
-require('es6-shim');
+require('core-js/shim');
 
 // Use bluebird internally. Use P.resolve(es6Promise) to convert an incoming
 // Promise to a bluebird Promise.
