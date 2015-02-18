@@ -94,7 +94,8 @@ logging:
 # Statsd metrics reporter
 metrics:
   type: txstatsd
-  host: localhost:8125
+  host: localhost
+  port: 8125
 
 services:
   - name: parsoid
