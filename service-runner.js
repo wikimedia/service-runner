@@ -56,7 +56,7 @@ ServiceRunner.prototype.run = function run (conf) {
         self._logger = new Logger(config.logging);
         // And the statsd client
         config.metrics.name = name;
-        self._metrics = makeStatsD(config.metrics);
+        self._metrics = makeStatsD(config.metrics, self._logger);
 
         if (cluster.isMaster && config.num_workers > 0) {
             return self._runMaster();
