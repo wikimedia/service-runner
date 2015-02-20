@@ -112,6 +112,11 @@ services:
         # more per-service config settings
 ```
 
+# Issue tracking
+
+Please report issues in [the service-runner phabricator
+project](https://phabricator.wikimedia.org/tag/service-runner/).
+
 # See also
 - https://github.com/Unitech/PM2/ - A lot of features. Focus on interactive
     use with commandline tools. Weak on logging (only local log files). Does

@@ -22,7 +22,7 @@ var os = require('os');
 
 
 var Logger = require('./lib/logger');
-var StatsD = require('./lib/statsd');
+var makeStatsD = require('./lib/statsd');
 
 
 // Disable cluster RR balancing; direct socket sharing has better throughput /
@@ -56,7 +56,7 @@ ServiceRunner.prototype.run = function run (conf) {
         self._logger = new Logger(config.logging);
         // And the statsd client
         config.metrics.name = name;
-        self._metrics = new StatsD(config.metrics);
+        self._metrics = makeStatsD(config.metrics, self._logger);
 
         if (cluster.isMaster && config.num_workers > 0) {
             return self._runMaster();
