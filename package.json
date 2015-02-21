@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
