@@ -103,7 +103,8 @@ ServiceRunner.prototype.updateConfig = function updateConfig (conf) {
         }
         return fs.readFileAsync(configFile)
         .then(function(yamlSource) {
-            self.config = self._sanitizeConfig(yaml.safeLoad(yamlSource), self.options);
+            self.config = self._sanitizeConfig(yaml.safeLoad(yamlSource),
+                    self.options);
         })
         .catch(function(e) {
             console.error('Error while reading config file: ' + e);
@@ -134,7 +135,8 @@ ServiceRunner.prototype._runMaster = function() {
 
     var shutdown_master = function() {
         self._shuttingDown = true;
-        self._logger.log('info/service-runner/master', 'master shutting down, killing workers');
+        self._logger.log('info/service-runner/master',
+                'master shutting down, killing workers');
         cluster.disconnect(function() {
             self._logger.log('info/service-runner/master', 'Exiting master');
             process.exit(0);
@@ -149,7 +151,8 @@ ServiceRunner.prototype._runWorker = function() {
     var self = this;
     // Worker.
     process.on('SIGTERM', function() {
-        self._logger.log('info/service-runner/worker', 'Worker ' + process.pid + ' shutting down');
+        self._logger.log('info/service-runner/worker', 'Worker '
+                + process.pid + ' shutting down');
         process.exit(0);
     });
 
