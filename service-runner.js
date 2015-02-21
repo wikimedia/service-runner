@@ -53,13 +53,17 @@ ServiceRunner.prototype.run = function run (conf) {
     .then(function() {
         var config = self.config;
         var name = config.info && config.info.name || 'service-runner';
+
         // Set up the logger
         if (!config.logging.name) {
             config.logging.name = name;
         }
         self._logger = new Logger(config.logging);
+
         // And the statsd client
-        config.metrics.name = name;
+        if (!config.metrics.name) {
+            config.metrics.name = name;
+        }
         self._metrics = makeStatsD(config.metrics, self._logger);
 
         if (cluster.isMaster && config.num_workers > 0) {
@@ -166,7 +170,9 @@ ServiceRunner.prototype._runWorker = function() {
     // We try to restart workers before they get slow
     // Default to something close to the default node 2g limit
     var limitMB = parseInt(self.config.worker_heap_limit_mb) || 1500;
-    new HeapWatch({ limitMB: limitMB }, this._logger).watch();
+    new HeapWatch({ limitMB: limitMB },
+            this._logger,
+            this._metrics).watch();
 
     // Require service modules and start them
     return P.all(this.config.services.map(function(service) {
