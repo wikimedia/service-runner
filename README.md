@@ -28,8 +28,8 @@ Options:
   -h, --help         [default: false]
 ```
 - [config loading](#config-loading)
-- flexible logging using bunyan, including logstash support via gelf
-- metric reporting using txstatsd
+- flexible logging using bunyan, including logstash support via gelf: `logger.log('info/request', { message: 'foo', uri: req.uri })`
+- metric reporting using txstatsd: `statsd.timing('foo.GET.2xx', Date.now() - startTime)`
 - heap dumps
 
 ## Usage
