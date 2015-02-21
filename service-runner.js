@@ -23,6 +23,7 @@ var os = require('os');
 
 var Logger = require('./lib/logger');
 var makeStatsD = require('./lib/statsd');
+var HeapWatch = require('./lib/heapwatch');
 
 
 // Disable cluster RR balancing; direct socket sharing has better throughput /
@@ -41,6 +42,9 @@ function ServiceRunner(options) {
     // Figure out the base path
     this._basePath = /\/node_modules\/service-runner$/.test(__dirname) ?
         path.resolve(__dirname + '/../../') : path.resolve('./');
+
+    // Is the master shutting down?
+    this._shuttingDown = false;
 }
 
 ServiceRunner.prototype.run = function run (conf) {
@@ -49,13 +53,17 @@ ServiceRunner.prototype.run = function run (conf) {
     .then(function() {
         var config = self.config;
         var name = config.info && config.info.name || 'service-runner';
+
         // Set up the logger
         if (!config.logging.name) {
             config.logging.name = name;
         }
         self._logger = new Logger(config.logging);
+
         // And the statsd client
-        config.metrics.name = name;
+        if (!config.metrics.name) {
+            config.metrics.name = name;
+        }
         self._metrics = makeStatsD(config.metrics, self._logger);
 
         if (cluster.isMaster && config.num_workers > 0) {
@@ -115,7 +123,7 @@ ServiceRunner.prototype._runMaster = function() {
     }
 
     cluster.on('exit', function(worker, code, signal) {
-        if (!worker.suicide) {
+        if (!self._shuttingDown) {
             var exitCode = worker.process.exitCode;
             self._logger.log('error/service-runner/master',
                     'worker' + worker.process.pid
@@ -125,6 +133,7 @@ ServiceRunner.prototype._runMaster = function() {
     });
 
     var shutdown_master = function() {
+        self._shuttingDown = true;
         self._logger.log('info/service-runner/master', 'master shutting down, killing workers');
         cluster.disconnect(function() {
             self._logger.log('info/service-runner/master', 'Exiting master');
@@ -156,6 +165,14 @@ ServiceRunner.prototype._runWorker = function() {
         heapdump.writeSnapshot();
         process.chdir(cwd);
     });
+
+    // Heap limiting
+    // We try to restart workers before they get slow
+    // Default to something close to the default node 2g limit
+    var limitMB = parseInt(self.config.worker_heap_limit_mb) || 1500;
+    new HeapWatch({ limitMB: limitMB },
+            this._logger,
+            this._metrics).watch();
 
     // Require service modules and start them
     return P.all(this.config.services.map(function(service) {
