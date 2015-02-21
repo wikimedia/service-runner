@@ -17,6 +17,10 @@ packaging:
 # Use 'ncpu' to run as many workers as there are CPU units
 num_workers: ncpu
 
+# Log error messages and gracefully restart a worker if v8 reports that it
+# uses more heap (note: not RSS) than this many mb.
+worker_heap_limit_mb: 500
+
 # Logger info
 logging:
   level: info
@@ -45,3 +49,4 @@ services:
       port: 12345
       interface: localhost
       # more per-service config settings
+
