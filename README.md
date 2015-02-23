@@ -1,7 +1,7 @@
 # service-runner
 Generic nodejs service runner & supervisor
 
-## Goals
+## Features
 - Supervise and cluster node services in a generic manner with a minimal interface:
 
 ```javascript
@@ -9,11 +9,11 @@ module.exports = function (options) {
     var config = options.config;
     // Logger instance
     var logger = options.logger;
-    // Statsd metrics reporter
-    var statsd = options.statsd;
+    // Metrics reporter (txstatsd, statsd)
+    var metrics = options.metrics;
 
     // Start the app, returning a promise
-    return startApp(config, logger, statsd);
+    return startApp(config, logger, metrics);
 }
 ```
 
@@ -29,7 +29,7 @@ Options:
 ```
 - [config loading](#config-loading)
 - flexible logging using bunyan, including logstash support via gelf: `logger.log('info/request', { message: 'foo', uri: req.uri })`
-- metric reporting using txstatsd: `statsd.timing('foo.GET.2xx', Date.now() - startTime)`
+- [metric reporting](#metric-reporting) using txstatsd or statsd: `statsd.timing('foo.GET.2xx', Date.now() - startTime)`
 - heap dumps
 
 ## Usage
@@ -110,6 +110,43 @@ services:
         port: 12345
         interface: localhost
         # more per-service config settings
+```
+
+### Metric reporting
+
+We basically expose the [node-statsd
+interface](https://github.com/sivy/node-statsd):
+
+```javascript
+// Timing: sends a timing command with the specified milliseconds
+options.metrics.timing('response_time', 42);
+
+// Increment: Increments a stat by a value (default is 1)
+options.metrics.increment('my_counter');
+
+// Decrement: Decrements a stat by a value (default is -1)
+options.metrics.decrement('my_counter');
+
+// Histogram: send data for histogram stat
+options.metrics.histogram('my_histogram', 42);
+
+// Gauge: Gauge a stat by a specified amount
+options.metrics.gauge('my_gauge', 123.45);
+
+// Set: Counts unique occurrences of a stat (alias of unique)
+options.metrics.set('my_unique', 'foobar');
+options.metrics.unique('my_unique', 'foobarbaz');
+
+// Incrementing multiple items
+options.metrics.increment(['these', 'are', 'different', 'stats']);
+
+// Sampling, this will sample 25% of the time
+the StatsD Daemon will compensate for sampling
+options.metrics.increment('my_counter', 1, 0.25);
+
+// Tags, this will add user-defined tags to
+the data
+options.metrics.histogram('my_histogram', 42, ['foo', 'bar']);
 ```
 
 # Issue tracking
