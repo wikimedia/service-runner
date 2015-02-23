@@ -96,6 +96,11 @@ ServiceRunner.prototype.updateConfig = function updateConfig (conf) {
         self.config = this._sanitizeConfig(conf, self.options);
         return P.resolve(conf);
     } else {
+        var package_json = {};
+        try {
+            package_json = require(self._basePath + '/' + 'package.json');
+        } catch (e) {}
+
         var configFile = this.options.configFile;
         if (/^\./.test(configFile)) {
             // resolve relative paths
@@ -105,6 +110,15 @@ ServiceRunner.prototype.updateConfig = function updateConfig (conf) {
         .then(function(yamlSource) {
             self.config = self._sanitizeConfig(yaml.safeLoad(yamlSource),
                     self.options);
+
+            // Make sure we have a sane config object by pulling in
+            // package.json info if necessary
+            var config = self.config;
+            config.package = config.package || config.info /* b/c */ || {};
+            var pack = config.package;
+            pack.name = pack.name || package_json.name;
+            pack.description = pack.description || package_json.description;
+            pack.version = pack.version || package_json.version;
         })
         .catch(function(e) {
             console.error('Error while reading config file: ' + e);

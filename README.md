@@ -64,20 +64,6 @@ services, which will set up this & other things for you.
 - Default top-level config format (**draft**):
 
 ```yaml
-# Info about this config. Used for packaging & other purposes.
-info: 
-  name: parsoid
-  version: 0.4.0
-  description: Bidirectional conversion service between MediaWiki wikitext and
-        HTML5
-
-# Package settings. Modeled on Debian, but likely to transfer to rpm as well.
-packaging:
-  depends:
-    nodejs: >=0.10.0
-  enhances: mediawiki
-
-
 # Number of worker processes to spawn. 
 # Set to 0 to run everything in a single process without clustering.
 num_workers: 1
@@ -148,6 +134,9 @@ options.metrics.increment('my_counter', 1, 0.25);
 the data
 options.metrics.histogram('my_histogram', 42, ['foo', 'bar']);
 ```
+
+All metrics are automatically prefixed by the config-provided service name /
+graphite hierachy prefix to ensure a consistent graphite metric hierarchy.
 
 # Issue tracking
 

@@ -1,17 +1,3 @@
-# Info about this config. Used for packaging & other purposes.
-info: 
-  name: parsoid
-  version: 0.4.0
-  description: Bidirectional conversion service between MediaWiki wikitext and
-        HTML5
-
-# Package settings. Modeled on Debian, but likely to transfer to rpm as well.
-packaging:
-  depends:
-    nodejs: '>=0.10.0'
-  enhances: mediawiki
-
-
 # Number of worker processes to spawn. 
 # Set to 0 to run everything in a single process without clustering.
 # Use 'ncpu' to run as many workers as there are CPU units
