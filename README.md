@@ -141,11 +141,10 @@ options.metrics.unique('my_unique', 'foobarbaz');
 options.metrics.increment(['these', 'are', 'different', 'stats']);
 
 // Sampling, this will sample 25% of the time
-the StatsD Daemon will compensate for sampling
+// the StatsD Daemon will compensate for sampling
 options.metrics.increment('my_counter', 1, 0.25);
 
-// Tags, this will add user-defined tags to
-the data
+// Tags, this will add user-defined tags to the data
 options.metrics.histogram('my_histogram', 42, ['foo', 'bar']);
 ```
 
