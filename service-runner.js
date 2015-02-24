@@ -52,7 +52,7 @@ ServiceRunner.prototype.run = function run (conf) {
     return this.updateConfig(conf)
     .then(function() {
         var config = self.config;
-        var name = config.info && config.info.name || 'service-runner';
+        var name = config.package && config.package.name || 'service-runner';
 
         // Set up the logger
         if (!config.logging.name) {
