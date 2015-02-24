@@ -31,6 +31,7 @@ Options:
 - flexible logging using bunyan, including logstash support via gelf: `logger.log('info/request', { message: 'foo', uri: req.uri })`
 - [metric reporting](#metric-reporting) using txstatsd or statsd: `statsd.timing('foo.GET.2xx', Date.now() - startTime)`
 - heap dumps
+- uses node 0.10's [cluster module](http://nodejs.org/docs/v0.10.0/api/cluster.html)
 
 ## Usage
 ```bash
@@ -162,3 +163,4 @@ project](https://phabricator.wikimedia.org/tag/service-runner/).
     available in other libraries.
 - http://krakenjs.com/ - Focused more on MVC & templating rather than
     supervision & modules
+- https://www.npmjs.com/package/forever-service - ...
