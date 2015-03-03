@@ -2,7 +2,7 @@
 Generic nodejs service runner & supervisor
 
 ## Features
-- Supervise and [cluster](](http://nodejs.org/api/cluster.html) node services in a generic manner with a minimal interface:
+- Supervise and [cluster](http://nodejs.org/api/cluster.html) node services in a generic manner with a minimal interface:
 
 ```javascript
 module.exports = function (options) {
@@ -143,7 +143,7 @@ Please report issues in [the service-runner phabricator
 project](https://phabricator.wikimedia.org/tag/service-runner/).
 
 # See also
-- https://github.com/Unitech/PM2/ - A lot of features. Focus on interactive
+- https://github.com/Unitech/PM2 - A lot of features. Focus on interactive
     use with commandline tools. Weak on logging (only local log files). Does
     not support node 0.10's cluster module.
 - https://github.com/strongloop/strong-agent - commercial license. Focus on
