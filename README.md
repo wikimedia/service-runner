@@ -137,12 +137,11 @@ options.metrics.histogram('my_histogram', 42, ['foo', 'bar']);
 All metrics are automatically prefixed by the config-provided service name /
 graphite hierachy prefix to ensure a consistent graphite metric hierarchy.
 
-# Issue tracking
-
+## Issue tracking
 Please report issues in [the service-runner phabricator
 project](https://phabricator.wikimedia.org/tag/service-runner/).
 
-# See also
+## See also
 - https://github.com/Unitech/PM2 - A lot of features. Focus on interactive
     use with commandline tools. Weak on logging (only local log files). Does
     not support node 0.10's cluster module.
