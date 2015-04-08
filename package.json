@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -9,7 +9,7 @@
   "scripts": {
     "start": "./service-runner.js",
     "test": "mocha",
-    "coverage": "sh test/utils/cleandb.sh && istanbul cover _mocha -- -R spec",
+    "coverage": "istanbul cover _mocha -- -R spec",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
