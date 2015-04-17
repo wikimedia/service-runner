@@ -24,6 +24,7 @@ var os = require('os');
 var Logger = require('./lib/logger');
 var makeStatsD = require('./lib/statsd');
 var HeapWatch = require('./lib/heapwatch');
+var docker = require('./lib/docker');
 
 
 // Disable cluster RR balancing; direct socket sharing has better throughput /
@@ -53,6 +54,12 @@ ServiceRunner.prototype.run = function run (conf) {
     .then(function() {
         var config = self.config;
         var name = config.package && config.package.name || 'service-runner';
+
+        // do we need to use Docker instead of starting normally ?
+        if(self.options.useDocker) {
+            self.options.basePath = self._basePath;
+            return docker(self.options, self.config);
+        }
 
         // Set up the logger
         if (!config.logging.name) {
@@ -114,11 +121,14 @@ ServiceRunner.prototype.updateConfig = function updateConfig (conf) {
             // Make sure we have a sane config object by pulling in
             // package.json info if necessary
             var config = self.config;
-            config.package = config.package || config.info /* b/c */ || {};
-            var pack = config.package;
-            pack.name = pack.name || package_json.name;
-            pack.description = pack.description || package_json.description;
-            pack.version = pack.version || package_json.version;
+            config.package = package_json;
+            if (config.info) {
+                // for backwards compat
+                var pack = config.package;
+                pack.name = config.info.name || pack.name;
+                pack.description = config.info.description || pack.description;
+                pack.version = config.version || pack.version;
+            }
         })
         .catch(function(e) {
             console.error('Error while reading config file: ' + e);
@@ -228,8 +238,8 @@ ServiceRunner.prototype._runWorker = function() {
 
 ServiceRunner.prototype._getOptions = function (opts) {
     // check process arguments
-    var argParser = require( "yargs" )
-        .usage( "Usage: $0 [-h|-v] [--param[=val]]" )
+    var argParser = require('yargs')
+        .usage("Usage: $0 [-b|-f|-h|-v] [--param[=val]]")
         .default({
 
             // Start a few more workers than there are cpus visible to the OS,
@@ -238,37 +248,51 @@ ServiceRunner.prototype._getOptions = function (opts) {
             // all concurrent short requests.
             n: -1,
             c: './config.yaml',
+            b: false,
+            f: false,
+            s: false,
+            t: false,
 
             v: false,
             h: false
 
         })
-        .boolean( [ "h", "v" ] )
-            .alias( "h", "help" )
-            .alias( "v", "version" )
-            .alias( "c", "config" )
-            .alias( "n", "num-workers" );
+        .boolean(['b', 'f', 's', 't', 'h', 'v'])
+            .alias('b', 'build')
+            .alias('f', 'force-build')
+            .alias('s', 'docker-start')
+            .alias('t', 'docker-test')
+            .alias('h', 'help')
+            .alias('v', 'version')
+            .alias('c', 'config')
+            .alias('n', 'num-workers');
     var args = argParser.argv;
 
     // help
-    if ( args.h ) {
+    if (args.h) {
         argParser.showHelp();
-        process.exit( 0 );
+        process.exit(0);
     }
 
     // version
-    if ( args.v ) {
-        var meta = require( path.join( __dirname, "./package.json" ) );
-        console.log( meta.name + " " + meta.version );
-        process.exit( 0 );
+    if (args.v) {
+        var meta = require(path.join(__dirname, './package.json'));
+        console.log(meta.name + ' ' + meta.version);
+        process.exit(0);
     }
 
 
     if (!opts) {
         // Use args
+        args.b = args.b || args.f;
         opts = {
             num_workers: args.n,
-            configFile: args.c
+            configFile: args.c,
+            build: args.b,
+            forceBuild: args.f,
+            dockerStart: args.s,
+            dockerTest: args.t,
+            useDocker: args.b || args.s || args.t
         };
     }
 
