@@ -55,8 +55,14 @@ ServiceRunner.prototype.run = function run (conf) {
         var config = self.config;
         var name = config.package && config.package.name || 'service-runner';
 
+        // display the version
+        if (self.options.displayVersion) {
+            console.log(name + ' ' + config.package.version);
+            process.exit(0);
+        }
+
         // do we need to use Docker instead of starting normally ?
-        if(self.options.useDocker) {
+        if (self.options.useDocker) {
             self.options.basePath = self._basePath;
             return docker(self.options, self.config);
         }
@@ -274,20 +280,13 @@ ServiceRunner.prototype._getOptions = function (opts) {
         process.exit(0);
     }
 
-    // version
-    if (args.v) {
-        var meta = require(path.join(__dirname, './package.json'));
-        console.log(meta.name + ' ' + meta.version);
-        process.exit(0);
-    }
-
-
     if (!opts) {
         // Use args
         args.b = args.b || args.f;
         opts = {
             num_workers: args.n,
             configFile: args.c,
+            displayVersion: args.v,
             build: args.b,
             forceBuild: args.f,
             dockerStart: args.s,
