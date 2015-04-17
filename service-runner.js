@@ -245,7 +245,7 @@ ServiceRunner.prototype._runWorker = function() {
 ServiceRunner.prototype._getOptions = function (opts) {
     // check process arguments
     var argParser = require('yargs')
-        .usage("Usage: $0 [-b|-f|-h|-v] [--param[=val]]")
+        .usage("Usage: $0 [-b|-f|-s|-t|-r|-h|-v] [--param[=val]]")
         .default({
 
             // Start a few more workers than there are cpus visible to the OS,
@@ -258,6 +258,7 @@ ServiceRunner.prototype._getOptions = function (opts) {
             f: false,
             s: false,
             t: false,
+            r: false,
 
             v: false,
             h: false
@@ -268,6 +269,7 @@ ServiceRunner.prototype._getOptions = function (opts) {
             .alias('f', 'force-build')
             .alias('s', 'docker-start')
             .alias('t', 'docker-test')
+            .alias('r', 'review')
             .alias('h', 'help')
             .alias('v', 'version')
             .alias('c', 'config')
@@ -282,13 +284,14 @@ ServiceRunner.prototype._getOptions = function (opts) {
 
     if (!opts) {
         // Use args
-        args.b = args.b || args.f;
+        args.b = args.b || args.f || args.r;
         opts = {
             num_workers: args.n,
             configFile: args.c,
             displayVersion: args.v,
             build: args.b,
             forceBuild: args.f,
+            sendReview: args.r,
             dockerStart: args.s,
             dockerTest: args.t,
             useDocker: args.b || args.s || args.t
