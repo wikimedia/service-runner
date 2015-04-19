@@ -5,7 +5,7 @@
  * and graceful shutdown. The worker module can also be started independently,
  * which is especially useful for debugging.
  */
-"use strict";
+'use strict';
 
 // Upgrade to es6
 require('core-js/shim');
@@ -20,18 +20,15 @@ var yaml = require('js-yaml');
 var fs = P.promisifyAll(require('fs'));
 var os = require('os');
 
-
 var Logger = require('./lib/logger');
 var makeStatsD = require('./lib/statsd');
 var HeapWatch = require('./lib/heapwatch');
 var docker = require('./lib/docker');
 
-
 // Disable cluster RR balancing; direct socket sharing has better throughput /
 // lower overhead. Also bump up somaxconn with this command:
 // sudo sysctl -w net.core.somaxconn=4096
 cluster.schedulingPolicy = cluster.SCHED_NONE;
-
 
 function ServiceRunner(options) {
     this.options = this._getOptions(options);
@@ -241,7 +238,6 @@ ServiceRunner.prototype._runWorker = function() {
     });
 };
 
-
 ServiceRunner.prototype._getOptions = function (opts) {
 
     if(opts) {
@@ -333,11 +329,7 @@ ServiceRunner.prototype._getOptions = function (opts) {
     return opts;
 };
 
-
-
-
 module.exports = ServiceRunner;
-
 
 if (module.parent === null) {
     // Run as a script: Start up
