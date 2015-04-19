@@ -45,7 +45,7 @@ function ServiceRunner(options) {
     this._shuttingDown = false;
 }
 
-ServiceRunner.prototype.run = function run (conf) {
+ServiceRunner.prototype.run = function run(conf) {
     var self = this;
     return this.updateConfig(conf)
     .then(function() {
@@ -84,23 +84,23 @@ ServiceRunner.prototype.run = function run (conf) {
     });
 };
 
-ServiceRunner.prototype._sanitizeConfig = function (conf, options) {
+ServiceRunner.prototype._sanitizeConfig = function(conf, options) {
     // TODO: Perform proper validation!
     if (!conf.logging) { conf.logging = {}; }
     if (!conf.metrics) { conf.metrics = {}; }
     // check the number of workers to run
-    if(options.num_workers !== -1) {
+    if (options.num_workers !== -1) {
         // the number of workers has been supplied
         // on the command line, so honour that
         conf.num_workers = options.num_workers;
-    } else if(conf.num_workers === 'ncpu' || typeof conf.num_workers !== 'number') {
+    } else if (conf.num_workers === 'ncpu' || typeof conf.num_workers !== 'number') {
         // use the number of CPUs
         conf.num_workers = os.cpus().length;
     }
     return conf;
 };
 
-ServiceRunner.prototype.updateConfig = function updateConfig (conf) {
+ServiceRunner.prototype.updateConfig = function updateConfig(conf) {
     var self = this;
     if (conf) {
         self.config = this._sanitizeConfig(conf, self.options);
@@ -238,9 +238,9 @@ ServiceRunner.prototype._runWorker = function() {
     });
 };
 
-ServiceRunner.prototype._getOptions = function (opts) {
+ServiceRunner.prototype._getOptions = function(opts) {
 
-    if(opts) {
+    if (opts) {
         // no need to parse command-line args,
         // opts are already here
         return opts;
@@ -306,7 +306,7 @@ ServiceRunner.prototype._getOptions = function (opts) {
     args.dockerTest = args._.includes('docker-test');
     args.deployRepo = args.deployRepo || args.build;
 
-    if(args.build && args.dockerStart || args.build && args.dockerTest
+    if (args.build && args.dockerStart || args.build && args.dockerTest
             || args.dockerStart && args.dockerTest) {
         console.error('Only one command can be specified!');
         process.exit(1);
