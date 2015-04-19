@@ -1,0 +1,24 @@
+{
+	"preset": "node-style-guide",
+
+	// Preserve these exceptions, they codify what we're already doing.
+	"requireCurlyBraces": [
+		"if",
+		"else",
+		"for",
+		"while",
+		"do",
+		"try",
+		"catch"
+	],
+
+	// We'd like to eliminate these at some point, to conform with the preset.
+	"maximumLineLength": null,
+	"requireCamelCaseOrUpperCaseIdentifiers": null,
+	"requireTrailingComma": null,
+	"validateIndentation": null,
+
+	"excludeFiles": [
+		"node_modules/**"
+	]
+}
