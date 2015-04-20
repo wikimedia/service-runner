@@ -24,6 +24,7 @@ var os = require('os');
 var Logger = require('./lib/logger');
 var makeStatsD = require('./lib/statsd');
 var HeapWatch = require('./lib/heapwatch');
+var docker = require('./lib/docker');
 
 
 // Disable cluster RR balancing; direct socket sharing has better throughput /
@@ -53,6 +54,18 @@ ServiceRunner.prototype.run = function run (conf) {
     .then(function() {
         var config = self.config;
         var name = config.package && config.package.name || 'service-runner';
+
+        // display the version
+        if (self.options.displayVersion) {
+            console.log(name + ' ' + config.package.version);
+            process.exit(0);
+        }
+
+        // do we need to use Docker instead of starting normally ?
+        if (self.options.useDocker) {
+            self.options.basePath = self._basePath;
+            return docker(self.options, self.config);
+        }
 
         // Set up the logger
         if (!config.logging.name) {
@@ -114,11 +127,14 @@ ServiceRunner.prototype.updateConfig = function updateConfig (conf) {
             // Make sure we have a sane config object by pulling in
             // package.json info if necessary
             var config = self.config;
-            config.package = config.package || config.info /* b/c */ || {};
-            var pack = config.package;
-            pack.name = pack.name || package_json.name;
-            pack.description = pack.description || package_json.description;
-            pack.version = pack.version || package_json.version;
+            config.package = package_json;
+            if (config.info) {
+                // for backwards compat
+                var pack = config.package;
+                pack.name = config.info.name || pack.name;
+                pack.description = config.info.description || pack.description;
+                pack.version = config.version || pack.version;
+            }
         })
         .catch(function(e) {
             console.error('Error while reading config file: ' + e);
@@ -227,50 +243,92 @@ ServiceRunner.prototype._runWorker = function() {
 
 
 ServiceRunner.prototype._getOptions = function (opts) {
+
+    if(opts) {
+        // no need to parse command-line args,
+        // opts are already here
+        return opts;
+    }
+
     // check process arguments
-    var argParser = require( "yargs" )
-        .usage( "Usage: $0 [-h|-v] [--param[=val]]" )
-        .default({
-
-            // Start a few more workers than there are cpus visible to the OS,
-            // so that we get some degree of parallelism even on single-core
-            // systems. A single long-running request would otherwise hold up
-            // all concurrent short requests.
-            n: -1,
-            c: './config.yaml',
-
-            v: false,
-            h: false
-
+    var args = require('yargs')
+        .usage('Usage: $0 [command] [options]')
+        .command('docker-start', 'starts the service in a Docker container')
+        .command('docker-test', 'starts the test process in a Docker container')
+        .command('build', 'builds the service\'s package and deploy repo')
+        .options({
+            n: {
+                alias: 'num-workers',
+                default: -1,
+                describe: 'number of workers to start',
+                nargs: 1
+            },
+            c: {
+                alias: 'config',
+                default: './config.yaml',
+                describe: 'YAML-formatted configuration file',
+                type: 'string',
+                nargs: 1
+            },
+            f: {
+                alias: 'force',
+                default: false,
+                describe: 'force the operation to execute',
+                type: 'boolean'
+            },
+            d: {
+                alias: 'deploy-repo',
+                default: false,
+                describe: 'build only the deploy repo',
+                type: 'boolean'
+            },
+            r: {
+                alias: 'review',
+                default: false,
+                describe: 'send the patch to Gerrit after building the repo',
+                type: 'boolean'
+            },
+            verbose: {
+                default: false,
+                describe: 'be verbose',
+                type: 'boolean'
+            },
+            v: {
+                alias: 'version',
+                default: false,
+                describe: 'print the service\'s version and exit',
+                type: 'boolean'
+            },
         })
-        .boolean( [ "h", "v" ] )
-            .alias( "h", "help" )
-            .alias( "v", "version" )
-            .alias( "c", "config" )
-            .alias( "n", "num-workers" );
-    var args = argParser.argv;
+        .help('h')
+        .alias('h', 'help')
+        .argv;
 
-    // help
-    if ( args.h ) {
-        argParser.showHelp();
-        process.exit( 0 );
+    args.deployRepo = args.deployRepo || args.review;
+    args.build = args._.includes('build') || args.deployRepo;
+    args.dockerStart = args._.includes('docker-start');
+    args.dockerTest = args._.includes('docker-test');
+    args.deployRepo = args.deployRepo || args.build;
+
+    if(args.build && args.dockerStart || args.build && args.dockerTest
+            || args.dockerStart && args.dockerTest) {
+        console.error('Only one command can be specified!');
+        process.exit(1);
     }
 
-    // version
-    if ( args.v ) {
-        var meta = require( path.join( __dirname, "./package.json" ) );
-        console.log( meta.name + " " + meta.version );
-        process.exit( 0 );
-    }
-
-
-    if (!opts) {
-        // Use args
-        opts = {
-            num_workers: args.n,
-            configFile: args.c
-        };
-    }
+    opts = {
+        num_workers: args.numWorkers,
+        configFile: args.config,
+        displayVersion: args.v,
+        build: args.build,
+        buildDeploy: args.deployRepo,
+        sendReview: args.review,
+        dockerStart: args.dockerStart,
+        dockerTest: args.dockerTest,
+        useDocker: args.deployRepo || args.dockerStart || args.dockerTest,
+        force: args.force,
+        verbose: args.verbose
+    };
 
     return opts;
 };
