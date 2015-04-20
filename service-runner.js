@@ -304,7 +304,8 @@ ServiceRunner.prototype._getOptions = function (opts) {
         .alias('h', 'help')
         .argv;
 
-    args.build = args._.includes('build') || args.deployRepo || args.review;
+    args.deployRepo = args.deployRepo || args.review;
+    args.build = args._.includes('build') || args.deployRepo;
     args.dockerStart = args._.includes('docker-start');
     args.dockerTest = args._.includes('docker-test');
     args.deployRepo = args.deployRepo || args.build;
