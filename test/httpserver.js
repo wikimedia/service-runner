@@ -1,15 +1,17 @@
+'use strict';
+
 var http = require('http');
-module.exports = function (opts) {
+module.exports = function(opts) {
     console.log(opts);
     return new Promise(function(resolve, reject) {
-        http.createServer(function (req, res) {
+        http.createServer(function(req, res) {
             opts.logger.log('info', {
                 uri: req.url
             });
             if (req.url === '/foo/') {
                 res.writeHead(302, {
                     'Content-Type': 'text/plain',
-                    'Location': 'bar'
+                    Location: 'bar'
                 });
                 res.end('bar');
             } else {
