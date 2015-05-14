@@ -146,9 +146,6 @@ ServiceRunner.prototype._runMaster = function() {
     this._logger.log('info/service-runner', 'master(' + process.pid + ') initializing '
             + this.config.num_workers + ' workers');
 
-
-    this._startWorker(this.config.num_workers);
-
     cluster.on('exit', function(worker, code, signal) {
         if (!self._shuttingDown) {
             var exitCode = worker.process.exitCode;
@@ -174,15 +171,22 @@ ServiceRunner.prototype._runMaster = function() {
 
     process.on('SIGINT', shutdown_master);
     process.on('SIGTERM', shutdown_master);
+
+    return this._startWorkers(this.config.num_workers);
 };
 
 // Fork off one worker at a time, once the previous worker has finished
 // startup.
-ServiceRunner.prototype._startWorker = function(remainingWorkers, msg) {
+ServiceRunner.prototype._startWorkers = function(remainingWorkers, msg) {
+    var self = this;
     if (remainingWorkers
             && (!msg || msg.type === 'startup_finished')) {
         var worker = cluster.fork();
-        worker.on('message', this._startWorker.bind(this, --remainingWorkers));
+        return new P(function(resolve) {
+            worker.on('message', function() {
+                resolve(self._startWorkers(--remainingWorkers));
+            });
+        });
     }
 };
 
@@ -244,11 +248,12 @@ ServiceRunner.prototype._runWorker = function() {
             return svcMod(opts);
         });
     }))
-    .then(function() {
+    .then(function(res) {
         // Signal that this worker finished startup
         if (cluster.isWorker) {
             process.send({type: 'startup_finished'});
         }
+        return res;
     })
     .catch(function(e) {
         self._logger.log('fatal/service-runner/worker', e);
