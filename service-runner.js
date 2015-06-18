@@ -37,8 +37,6 @@ function ServiceRunner(options) {
     this._logger = null;
     this._metrics = null;
 
-    this._workers = {};
-
     // Figure out the base path
     this._basePath = /\/node_modules\/service-runner$/.test(__dirname) ?
         path.resolve(__dirname + '/../../') : path.resolve('./');
@@ -151,15 +149,13 @@ ServiceRunner.prototype._runMaster = function() {
     cluster.on('exit', function(worker, code, signal) {
         if (!self._shuttingDown) {
             var exitCode = worker.process.exitCode;
-            if (self._workers[worker.id]) {
-                self._logger.log('error/service-runner/master',
-                        'worker' + worker.process.pid
-                        + 'died (' + exitCode + '), restarting.');
-                P.delay(Math.random() * 2000)
-                .then(function() {
-                    cluster.fork();
-                });
-            }
+            self._logger.log('error/service-runner/master',
+                    'worker' + worker.process.pid
+                    + 'died (' + exitCode + '), restarting.');
+            P.delay(Math.random() * 2000)
+            .then(function() {
+                cluster.fork();
+            });
         }
     });
 
@@ -183,8 +179,7 @@ ServiceRunner.prototype._runMaster = function() {
 };
 
 ServiceRunner.prototype._stopWorker = function(id) {
-    var worker = this._workers[id];
-    delete this._workers[id];
+    var worker = cluster.workers[id];
     var res = new P(function(resolve) {
         var timeout = setTimeout(function() {
             worker.kill('SIGKILL');
@@ -205,7 +200,7 @@ ServiceRunner.prototype._rollingRestart = function() {
         message: 'SIGHUP received, performing rolling restart of workers'
     });
     var self = this;
-    P.each(Object.keys(this._workers), function(workerId) {
+    P.each(Object.keys(cluster.workers), function(workerId) {
         return self._stopWorker(workerId)
         .then(function() {
             return self._startWorkers(1);
@@ -220,7 +215,6 @@ ServiceRunner.prototype._startWorkers = function(remainingWorkers, msg) {
     if (remainingWorkers
             && (!msg || msg.type === 'startup_finished')) {
         var worker = cluster.fork();
-        self._workers[worker.id] = worker;
         return new P(function(resolve) {
             worker.on('message', function() {
                 resolve(self._startWorkers(--remainingWorkers));
