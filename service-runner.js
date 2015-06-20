@@ -147,7 +147,7 @@ ServiceRunner.prototype._runMaster = function() {
             + this.config.num_workers + ' workers');
 
     cluster.on('exit', function(worker, code, signal) {
-        if (!self._shuttingDown) {
+        if (!self._shuttingDown && !worker.suicide) {
             var exitCode = worker.process.exitCode;
             self._logger.log('error/service-runner/master',
                     'worker' + worker.process.pid
