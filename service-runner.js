@@ -43,6 +43,9 @@ function ServiceRunner(options) {
 
     // Is the master shutting down?
     this._shuttingDown = false;
+
+    // Are we performing a rolling restart?
+    this._inRollingRestart = false;
 }
 
 ServiceRunner.prototype.run = function run(conf) {
@@ -147,7 +150,7 @@ ServiceRunner.prototype._runMaster = function() {
             + this.config.num_workers + ' workers');
 
     cluster.on('exit', function(worker, code, signal) {
-        if (!self._shuttingDown && !worker.suicide) {
+        if (!self._shuttingDown && !self._inRollingRestart) {
             var exitCode = worker.process.exitCode;
             self._logger.log('error/service-runner/master',
                     'worker' + worker.process.pid
@@ -200,11 +203,15 @@ ServiceRunner.prototype._rollingRestart = function() {
         message: 'SIGHUP received, performing rolling restart of workers'
     });
     var self = this;
+    self._inRollingRestart = true;
     P.each(Object.keys(cluster.workers), function(workerId) {
         return self._stopWorker(workerId)
         .then(function() {
             return self._startWorkers(1);
         });
+    })
+    .then(function() {
+        self._inRollingRestart = false;
     });
 };
 
