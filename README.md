@@ -19,13 +19,25 @@ module.exports = function (options) {
 
 - standard command line parameters:
 ```bash
-Usage: node ./service-runner.js [-h|-v] [--param[=val]]
+Usage: service-runner.js [command] [options]
+
+Commands:
+  docker-start  starts the service in a Docker container
+  docker-test   starts the test process in a Docker container
+  build         builds the service's package and deploy repo
 
 Options:
-  -n, --num-workers  [default: -1]
-  -c, --config       [default: "./config.yaml"]
-  -v, --version      [default: false]
-  -h, --help         [default: false]
+  -n, --num-workers  number of workers to start                    [default: -1]
+  -c, --config       YAML-formatted configuration file
+                                             [string] [default: "./config.yaml"]
+  -f, --force        force the operation to execute   [boolean] [default: false]
+  -d, --deploy-repo  build only the deploy repo       [boolean] [default: false]
+  -r, --review       send the patch to Gerrit after building the repo
+                                                      [boolean] [default: false]
+  --verbose          be verbose                       [boolean] [default: false]
+  -v, --version      print the service's version and exit
+                                                      [boolean] [default: false]
+  -h, --help         Show help                                         [boolean]
 ```
 - [config loading](#config-loading)
 - flexible logging using bunyan, including logstash support via gelf: `logger.log('info/request', { message: 'foo', uri: req.uri })`
@@ -64,7 +76,7 @@ services, which will set up this & other things for you.
 - Default top-level config format (**draft**):
 
 ```yaml
-# Number of worker processes to spawn. 
+# Number of worker processes to spawn.
 # Set to 0 to run everything in a single process without clustering.
 num_workers: 1
 
@@ -90,7 +102,7 @@ services:
 
     # optionally, a version constraint of the npm package
     # version: ^0.4.0
-    
+
     # per-service config
     conf:
         port: 12345
