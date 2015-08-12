@@ -69,13 +69,13 @@ ServiceRunner.prototype.run = function run(conf) {
 
         // Set up the logger
         if (!config.logging.name) {
-            config.logging.name = name;
+            config.logging.name = (config.services && config.services.name) || name;
         }
         self._logger = new Logger(config.logging);
 
         // And the statsd client
         if (!config.metrics.name) {
-            config.metrics.name = name;
+            config.metrics.name = (config.services && config.services.name) || name;
         }
         self._metrics = makeStatsD(config.metrics, self._logger);
 
