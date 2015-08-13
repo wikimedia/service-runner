@@ -69,15 +69,14 @@ ServiceRunner.prototype.run = function run(conf) {
 
         // Set up the logger
         if (!config.logging.name) {
-            config.logging.name = (config.services && config.services.name) || name;
+            config.logging.name = name;
         }
         self._logger = new Logger(config.logging);
 
         // And the statsd client
         if (!config.metrics.name) {
-            config.metrics.name = (config.services && config.services.name) || name;
+            config.metrics.name = name;
         }
-        self._metrics = makeStatsD(config.metrics, self._logger);
 
         if (cluster.isMaster && config.num_workers > 0) {
             return self._runMaster();
@@ -251,6 +250,8 @@ ServiceRunner.prototype._runWorker = function() {
         heapdump.writeSnapshot();
         process.chdir(cwd);
     });
+
+    self._metrics = makeStatsD(self.config.metrics, self._logger);
 
     // Heap limiting
     // We try to restart workers before they get slow
