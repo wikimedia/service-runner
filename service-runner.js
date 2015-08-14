@@ -153,7 +153,7 @@ ServiceRunner.prototype._checkHeartbeat = function() {
             Object.keys(cluster.workers).forEach(function(workerId) {
                 var worker = cluster.workers[workerId];
                 var lastBeat = self.workerHeartbeatTime[worker.process.pid];
-                if (!lastBeat || (!lastBeat.killed && new Date() - lastBeat.time > 3 * self.config.timeout)) {
+                if (!lastBeat || (!lastBeat.killed && new Date() - lastBeat.time > self.config.timeout)) {
                     self._logger.log('error/service-runner/master',
                         'worker ' + worker.process.pid + ' stopped sending heartbeats, killing.');
                     self._stopWorker(workerId);
