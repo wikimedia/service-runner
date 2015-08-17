@@ -265,7 +265,7 @@ ServiceRunner.prototype._rollingRestart = function() {
     However, in some cases (for example an infinite CPU loop in worker,
     'disconnect' may never happen, and master will crash receiving an 'exit'
  */
-function workAround(worker) {
+function fixCloseDisconnectListeners(worker) {
     // Take the exit listener node's cluster have set.
     var listeners = worker.process.listeners('exit')[0];
     var exit = listeners[Object.keys(listeners)[0]];
@@ -291,7 +291,7 @@ ServiceRunner.prototype._startWorkers = function(remainingWorkers) {
     if (remainingWorkers) {
         var worker = cluster.fork();
         return new P(function(resolve) {
-            workAround(worker);
+            fixCloseDisconnectListeners(worker);
             worker.on('message', function(msg) {
                 if (msg.type === 'startup_finished') {
                     resolve(self._startWorkers(--remainingWorkers));
