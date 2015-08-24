@@ -291,9 +291,12 @@ function fixCloseDisconnectListeners(worker) {
 ServiceRunner.prototype._saveBeat = function(worker) {
     var self = this;
     var currentVal = self.workerHeartbeatTime[worker.process.pid];
+    if (currentVal && currentVal.killed) {
+        return;
+    }
     self.workerHeartbeatTime[worker.process.pid] = {
         time: new Date(),
-        killed: (currentVal && currentVal.killed) || false
+        killed: false
     };
 };
 
