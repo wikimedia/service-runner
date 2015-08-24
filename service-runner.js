@@ -102,7 +102,7 @@ ServiceRunner.prototype._sanitizeConfig = function(conf, options) {
         // use the number of CPUs
         conf.num_workers = os.cpus().length;
     }
-    conf.timeout = conf.timeout || 1000;
+    conf.worker_heartbeat_timeout = conf.worker_heartbeat_timeout || 1000;
     return conf;
 };
 
@@ -153,7 +153,8 @@ ServiceRunner.prototype._checkHeartbeat = function() {
             Object.keys(cluster.workers).forEach(function(workerId) {
                 var worker = cluster.workers[workerId];
                 var lastBeat = self.workerHeartbeatTime[worker.process.pid];
-                if (!lastBeat || (!lastBeat.killed && new Date() - lastBeat.time > self.config.timeout)) {
+                if (!lastBeat || (!lastBeat.killed && new Date() - lastBeat.time
+                        > self.config.worker_heartbeat_timeout)) {
                     self._logger.log('error/service-runner/master',
                         'worker ' + worker.process.pid + ' stopped sending heartbeats, killing.');
                     self._stopWorker(workerId);
@@ -161,7 +162,7 @@ ServiceRunner.prototype._checkHeartbeat = function() {
                 }
             });
         }
-    }, self.config.timeout);
+    }, self.config.worker_heartbeat_timeout / 2 + 1);
 };
 
 ServiceRunner.prototype._runMaster = function() {
@@ -306,12 +307,12 @@ ServiceRunner.prototype._startWorkers = function(remainingWorkers) {
     }
 };
 
-ServiceRunner.prototype._runHeartBeat = function() {
+ServiceRunner.prototype._workerHeartBeat = function() {
     // We send heart beat 3 times more frequently than check it
     // to avoid possibility of wrong restarts
     this.interval = setInterval(function() {
         process.send({ type: 'heartbeat' });
-    }, this.config.timeout / 3);
+    }, this.config.worker_heartbeat_timeout / 5);
 };
 
 ServiceRunner.prototype._runWorker = function() {
@@ -379,7 +380,7 @@ ServiceRunner.prototype._runWorker = function() {
         // Signal that this worker finished startup
         if (cluster.isWorker) {
             process.send({type: 'startup_finished'});
-            self._runHeartBeat();
+            self._workerHeartBeat();
         }
         return res;
     })
