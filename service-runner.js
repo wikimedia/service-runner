@@ -299,7 +299,7 @@ ServiceRunner.prototype._startWorkers = function(remainingWorkers) {
                     var currentVal = self.workerHeartbeatTime[worker.process.pid];
                     self.workerHeartbeatTime[worker.process.pid] = {
                         time: new Date(),
-                        killed: currentVal && currentVal.killed
+                        killed: (currentVal && currentVal.killed) || false
                     };
                 }
             });
