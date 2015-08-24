@@ -206,9 +206,7 @@ ServiceRunner.prototype._runMaster = function() {
 
     return this._startWorkers(this.config.num_workers)
     .then(function(workers) {
-        setTimeout(function() {
-            self._checkHeartbeat();
-        }, 1000);
+        self._checkHeartbeat();
         return workers;
     });
 };
@@ -312,7 +310,7 @@ ServiceRunner.prototype._workerHeartBeat = function() {
     // to avoid possibility of wrong restarts
     this.interval = setInterval(function() {
         process.send({ type: 'heartbeat' });
-    }, this.config.worker_heartbeat_timeout / 5);
+    }, this.config.worker_heartbeat_timeout / 3);
 };
 
 ServiceRunner.prototype._runWorker = function() {
@@ -348,6 +346,10 @@ ServiceRunner.prototype._runWorker = function() {
             this._logger,
             this._metrics).watch();
 
+    if (cluster.isWorker) {
+        self._workerHeartBeat();
+    }
+
     // Require service modules and start them
     return P.all(this.config.services.map(function(service) {
         var modName = service.module || service.name;
@@ -380,7 +382,6 @@ ServiceRunner.prototype._runWorker = function() {
         // Signal that this worker finished startup
         if (cluster.isWorker) {
             process.send({type: 'startup_finished'});
-            self._workerHeartBeat();
         }
         return res;
     })
