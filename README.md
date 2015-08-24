@@ -82,7 +82,7 @@ num_workers: 1
 
 # Number of milliseconds to wait for a heartbeat from worker before killing
 # and restarting it
-worker_heartbeat_timeout: 500
+worker_heartbeat_timeout: 7500
 
 # Logger info
 logging:
