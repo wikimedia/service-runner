@@ -102,7 +102,7 @@ ServiceRunner.prototype._sanitizeConfig = function(conf, options) {
         // use the number of CPUs
         conf.num_workers = os.cpus().length;
     }
-    conf.worker_heartbeat_timeout = conf.worker_heartbeat_timeout || 1000;
+    conf.worker_heartbeat_timeout = conf.worker_heartbeat_timeout || 7500;
     return conf;
 };
 
