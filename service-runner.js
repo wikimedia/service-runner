@@ -284,23 +284,33 @@ function fixCloseDisconnectListeners(worker) {
     });
 }
 
+/**
+ * Saves the timestamp of a worker heartbeat
+ * @private
+ */
+ServiceRunner.prototype._saveBeat = function(worker) {
+    var self = this;
+    var currentVal = self.workerHeartbeatTime[worker.process.pid];
+    self.workerHeartbeatTime[worker.process.pid] = {
+        time: new Date(),
+        killed: (currentVal && currentVal.killed) || false
+    };
+};
+
 // Fork off one worker at a time, once the previous worker has finished
 // startup.
 ServiceRunner.prototype._startWorkers = function(remainingWorkers) {
     var self = this;
     if (remainingWorkers) {
         var worker = cluster.fork();
+        self._saveBeat(worker);
         return new P(function(resolve) {
             fixCloseDisconnectListeners(worker);
             worker.on('message', function(msg) {
                 if (msg.type === 'startup_finished') {
                     resolve(self._startWorkers(--remainingWorkers));
                 } else if (msg.type === 'heartbeat') {
-                    var currentVal = self.workerHeartbeatTime[worker.process.pid];
-                    self.workerHeartbeatTime[worker.process.pid] = {
-                        time: new Date(),
-                        killed: (currentVal && currentVal.killed) || false
-                    };
+                    self._saveBeat(worker);
                 }
             });
         });
