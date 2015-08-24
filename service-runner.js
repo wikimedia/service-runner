@@ -296,9 +296,10 @@ ServiceRunner.prototype._startWorkers = function(remainingWorkers) {
                 if (msg.type === 'startup_finished') {
                     resolve(self._startWorkers(--remainingWorkers));
                 } else if (msg.type === 'heartbeat') {
+                    var currentVal = self.workerHeartbeatTime[worker.process.pid];
                     self.workerHeartbeatTime[worker.process.pid] = {
                         time: new Date(),
-                        killed: false
+                        killed: currentVal && currentVal.killed
                     };
                 }
             });
