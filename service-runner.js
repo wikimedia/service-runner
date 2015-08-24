@@ -46,6 +46,8 @@ function ServiceRunner(options) {
 
     // Are we performing a rolling restart?
     this._inRollingRestart = false;
+
+    this.workerHeartbeatTime = {};
 }
 
 ServiceRunner.prototype.run = function run(conf) {
@@ -99,6 +101,7 @@ ServiceRunner.prototype._sanitizeConfig = function(conf, options) {
         // use the number of CPUs
         conf.num_workers = os.cpus().length;
     }
+    conf.worker_heartbeat_timeout = conf.worker_heartbeat_timeout || 7500;
     return conf;
 };
 
@@ -142,6 +145,26 @@ ServiceRunner.prototype.updateConfig = function updateConfig(conf) {
     }
 };
 
+ServiceRunner.prototype._checkHeartbeat = function() {
+    var self = this;
+    self.interval = setInterval(function() {
+        if (!self._shuttingDown && !self._inRollingRestart) {
+            var now = new Date();
+            Object.keys(cluster.workers).forEach(function(workerId) {
+                var worker = cluster.workers[workerId];
+                var lastBeat = self.workerHeartbeatTime[worker.process.pid];
+                if (!lastBeat || (!lastBeat.killed && now - lastBeat.time
+                        > self.config.worker_heartbeat_timeout)) {
+                    self._logger.log('error/service-runner/master',
+                        'worker ' + worker.process.pid + ' stopped sending heartbeats, killing.');
+                    self._stopWorker(workerId);
+                    // Don't need to respawn a worker, it will be restarted upon 'exit' event
+                }
+            });
+        }
+    }, self.config.worker_heartbeat_timeout / 2 + 1);
+};
+
 ServiceRunner.prototype._runMaster = function() {
     var self = this;
     // Fork workers.
@@ -152,11 +175,12 @@ ServiceRunner.prototype._runMaster = function() {
         if (!self._shuttingDown && !self._inRollingRestart) {
             var exitCode = worker.process.exitCode;
             self._logger.log('error/service-runner/master',
-                    'worker' + worker.process.pid
-                    + 'died (' + exitCode + '), restarting.');
+                    'worker ' + worker.process.pid
+                    + ' died (' + exitCode + '), restarting.');
+            delete self.workerHeartbeatTime[worker.process.pid];
             P.delay(Math.random() * 2000)
             .then(function() {
-                cluster.fork();
+                self._startWorkers(1);
             });
         }
     });
@@ -165,6 +189,9 @@ ServiceRunner.prototype._runMaster = function() {
         self._shuttingDown = true;
         self._logger.log('info/service-runner/master',
                 'master shutting down, killing workers');
+        if (self.interval) {
+            clearInterval(self.interval);
+        }
         cluster.disconnect(function() {
             self._logger.log('info/service-runner/master', 'Exiting master');
             process.exit(0);
@@ -177,19 +204,33 @@ ServiceRunner.prototype._runMaster = function() {
     // Set up rolling restarts
     process.on('SIGHUP', this._rollingRestart.bind(this));
 
-    return this._startWorkers(this.config.num_workers);
+    return this._startWorkers(this.config.num_workers)
+    .then(function(workers) {
+        self._checkHeartbeat();
+        return workers;
+    });
 };
 
-ServiceRunner.prototype._stopWorker = function(id) {
-    var worker = cluster.workers[id];
+ServiceRunner.prototype._stopWorker = function(workerId) {
+    var self = this;
+    var worker = cluster.workers[workerId];
+    self.workerHeartbeatTime[worker.process.pid] = {
+        time: null,
+        killed: true
+    };
     var res = new P(function(resolve) {
         var timeout = setTimeout(function() {
-            worker.kill('SIGKILL');
+            // worker.kill doesn't send a signal immediately, it waits until
+            // worker closes all connections with master. If after a minute
+            // it didn't happen, don't expect it happen ever.
+            process.kill(worker.process.pid, 'SIGKILL');
+            delete self.workerHeartbeatTime[worker.process.pid];
             resolve();
         }, 60000);
         worker.on('disconnect', function() {
             worker.kill('SIGKILL');
             clearTimeout(timeout);
+            delete self.workerHeartbeatTime[worker.process.pid];
             resolve();
         });
     });
@@ -214,25 +255,85 @@ ServiceRunner.prototype._rollingRestart = function() {
     });
 };
 
+/*
+    This is a workaround for the following bug in node:
+    https://github.com/joyent/node/issues/9409
+
+    Shortly, the problem is that a worker is removed by master
+    if it sends 'disconnect' and then it's checked on 'exit'.
+    However, in some cases (for example an infinite CPU loop in worker,
+    'disconnect' may never happen, and master will crash receiving an 'exit'
+ */
+function fixCloseDisconnectListeners(worker) {
+    // Take the exit listener node's cluster have set.
+    var listeners = worker.process.listeners('exit')[0];
+    var exit = listeners[Object.keys(listeners)[0]];
+
+    // Take the disconnect litener node's cluster have set.
+    listeners = worker.process.listeners('disconnect')[0];
+    var disconnect = listeners[Object.keys(listeners)[0]];
+
+    // Now replace the exit listener to make sure 'disconnect' was called
+    worker.process.removeListener('exit', exit);
+    worker.process.once('exit', function(exitCode, signalCode) {
+        if (worker.state != 'disconnected') {
+            disconnect();
+        }
+        exit(exitCode, signalCode);
+    });
+}
+
+/**
+ * Saves the timestamp of a worker heartbeat
+ * @private
+ */
+ServiceRunner.prototype._saveBeat = function(worker) {
+    var self = this;
+    var currentVal = self.workerHeartbeatTime[worker.process.pid];
+    if (currentVal && currentVal.killed) {
+        return;
+    }
+    self.workerHeartbeatTime[worker.process.pid] = {
+        time: new Date(),
+        killed: false
+    };
+};
+
 // Fork off one worker at a time, once the previous worker has finished
 // startup.
-ServiceRunner.prototype._startWorkers = function(remainingWorkers, msg) {
+ServiceRunner.prototype._startWorkers = function(remainingWorkers) {
     var self = this;
-    if (remainingWorkers
-            && (!msg || msg.type === 'startup_finished')) {
+    if (remainingWorkers) {
         var worker = cluster.fork();
+        self._saveBeat(worker);
         return new P(function(resolve) {
-            worker.on('message', function() {
-                resolve(self._startWorkers(--remainingWorkers));
+            fixCloseDisconnectListeners(worker);
+            worker.on('message', function(msg) {
+                if (msg.type === 'startup_finished') {
+                    resolve(self._startWorkers(--remainingWorkers));
+                } else if (msg.type === 'heartbeat') {
+                    self._saveBeat(worker);
+                }
             });
         });
     }
+};
+
+ServiceRunner.prototype._workerHeartBeat = function() {
+    // We send heart beat 3 times more frequently than check it
+    // to avoid possibility of wrong restarts
+    this.interval = setInterval(function() {
+        process.send({ type: 'heartbeat' });
+    }, this.config.worker_heartbeat_timeout / 3);
 };
 
 ServiceRunner.prototype._runWorker = function() {
     var self = this;
     // Worker.
     process.on('SIGTERM', function() {
+        if (self.interval) {
+            clearInterval(self.interval);
+        }
         self._logger.log('info/service-runner/worker', 'Worker '
                 + process.pid + ' shutting down');
         process.exit(0);
@@ -260,6 +361,10 @@ ServiceRunner.prototype._runWorker = function() {
     new HeapWatch({ limitMB: limitMB },
             this._logger,
             this._metrics).watch();
+
+    if (cluster.isWorker) {
+        self._workerHeartBeat();
+    }
 
     // Require service modules and start them
     return P.all(this.config.services.map(function(service) {

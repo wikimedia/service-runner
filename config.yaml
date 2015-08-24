@@ -3,6 +3,10 @@
 # Use 'ncpu' to run as many workers as there are CPU units
 num_workers: ncpu
 
+# Number of milliseconds to wait for a heartbeat from worker before killing
+# and restarting it
+worker_heartbeat_timeout: 7500
+
 # Log error messages and gracefully restart a worker if v8 reports that it
 # uses more heap (note: not RSS) than this many mb.
 worker_heap_limit_mb: 500
