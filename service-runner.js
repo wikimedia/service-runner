@@ -252,6 +252,11 @@ ServiceRunner.prototype._runMaster = function() {
     // Set up rolling restarts
     process.on('SIGHUP', function() {
         return self.updateConfig()
+        .then(function() {
+            // Recreate loggers
+            self._logger.close();
+            self._logger = new Logger(self.config.logging);
+        })
         .then(self._rollingRestart.bind(self));
     });
 
