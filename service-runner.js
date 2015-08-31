@@ -52,11 +52,9 @@ function ServiceRunner(options) {
 
 ServiceRunner.prototype.run = function run(conf) {
     var self = this;
-    var action = P.resolve();
+    var action;
     if (cluster.isMaster) {
-        action = action.then(function() {
-            return self.updateConfig(conf);
-        });
+        action = self.updateConfig(conf);
     } else {
         action = new Promise(function(resolve, reject) {
             var timeout = setTimeout(function() {
@@ -74,6 +72,7 @@ ServiceRunner.prototype.run = function run(conf) {
         });
     }
     action = action
+    .then(self.processConfig.bind(self))
     .then(function() {
         if (cluster.isMaster && self.config.num_workers > 0) {
             return self._runMaster();
@@ -168,29 +167,36 @@ ServiceRunner.prototype.updateConfig = function updateConfig(conf) {
         var config = self.config;
         var name = config.package && config.package.name || 'service-runner';
 
-        // display the version
-        if (self.options.displayVersion) {
-            console.log(name + ' ' + config.package.version);
-            process.exit(0);
-        }
-
-        // do we need to use Docker instead of starting normally ?
-        if (self.options.useDocker) {
-            self.options.basePath = self._basePath;
-            return docker(self.options, self.config);
-        }
-
         // Set up the logger
         if (!config.logging.name) {
             config.logging.name = name;
         }
-        self._logger = new Logger(config.logging);
 
         // And the statsd client
         if (!config.metrics.name) {
             config.metrics.name = name;
         }
     });
+};
+
+ServiceRunner.prototype.processConfig = function() {
+    var self = this;
+    var config = self.config;
+
+    var name = config.package && config.package.name || 'service-runner';
+    // display the version
+    if (self.options.displayVersion) {
+        console.log(name + ' ' + config.package.version);
+        process.exit(0);
+    }
+
+    // do we need to use Docker instead of starting normally ?
+    if (self.options.useDocker) {
+        self.options.basePath = self._basePath;
+        return docker(self.options, self.config);
+    }
+
+    self._logger = new Logger(config.logging);
 };
 
 ServiceRunner.prototype._checkHeartbeat = function() {
@@ -255,8 +261,8 @@ ServiceRunner.prototype._runMaster = function() {
         .then(function() {
             // Recreate loggers
             self._logger.close();
-            self._logger = new Logger(self.config.logging);
         })
+        .then(self.processConfig.bind(self))
         .then(self._rollingRestart.bind(self));
     });
 
