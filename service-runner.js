@@ -52,14 +52,31 @@ function ServiceRunner(options) {
 
 ServiceRunner.prototype.run = function run(conf) {
     var self = this;
-    return this.updateConfig(conf)
+    var configUpdateAction;
+    if (cluster.isMaster) {
+        configUpdateAction = self.updateConfig(conf);
+    } else {
+        configUpdateAction = new Promise(function(resolve, reject) {
+            var timeout = setTimeout(function() {
+                reject(new Error('Timeout waiting for config in worker ' + process.pid));
+            }, 3000);
+            process.on('message', function(message) {
+                if (message.type === 'config') {
+                    clearTimeout(timeout);
+                    self.updateConfig(message.body)
+                    .then(resolve);
+                } else {
+                    reject(new Error('Invalid message received: ' + JSON.stringify(message)));
+                }
+            });
+        });
+    }
+    return configUpdateAction
     .then(function() {
         var config = self.config;
-        var name = config.package && config.package.name || 'service-runner';
-
         // display the version
         if (self.options.displayVersion) {
-            console.log(name + ' ' + config.package.version);
+            console.log(config.serviceName + ' ' + config.package.version);
             process.exit(0);
         }
 
@@ -69,18 +86,9 @@ ServiceRunner.prototype.run = function run(conf) {
             return docker(self.options, self.config);
         }
 
-        // Set up the logger
-        if (!config.logging.name) {
-            config.logging.name = name;
-        }
         self._logger = new Logger(config.logging);
 
-        // And the statsd client
-        if (!config.metrics.name) {
-            config.metrics.name = name;
-        }
-
-        if (cluster.isMaster && config.num_workers > 0) {
+        if (cluster.isMaster && self.config.num_workers > 0) {
             return self._runMaster();
         } else {
             return self._runWorker();
@@ -105,44 +113,89 @@ ServiceRunner.prototype._sanitizeConfig = function(conf, options) {
     return conf;
 };
 
-ServiceRunner.prototype.updateConfig = function updateConfig(conf) {
-    var self = this;
-    if (conf) {
-        self.config = this._sanitizeConfig(conf, self.options);
-        return P.resolve(conf);
-    } else {
-        var package_json = {};
-        try {
-            package_json = require(self._basePath + '/' + 'package.json');
-        } catch (e) {}
 
+/**
+ * Loads the config from file, serialized input or Object
+ *
+ * @param conf a configuration.
+ *             If undefined - config is loaded from config.yaml file
+ *             If Object - treated as already parsed configuration
+ *             If sting - treated a serialized yaml config
+ */
+ServiceRunner.prototype.loadConfig = function loadConfig(conf) {
+    var self = this;
+    var action;
+    if (conf && conf instanceof Object) {
+        // Ready config object, no need to load from FS or parse yaml
+        action = P.resolve(conf);
+    } else if (conf && typeof conf === 'string') {
+        // Yaml source provided as config string
+        action = P.try(function() {
+            return yaml.safeLoad(conf);
+        });
+    } else {
+        // No config provided - load from file and parse yaml.
         var configFile = this.options.configFile;
         if (/^\./.test(configFile)) {
             // resolve relative paths
             configFile = path.resolve(self._basePath + '/' + configFile);
         }
-        return fs.readFileAsync(configFile)
+        action = fs.readFileAsync(configFile)
         .then(function(yamlSource) {
-            self.config = self._sanitizeConfig(yaml.safeLoad(yamlSource),
-                    self.options);
-
-            // Make sure we have a sane config object by pulling in
-            // package.json info if necessary
-            var config = self.config;
-            config.package = package_json;
-            if (config.info) {
-                // for backwards compat
-                var pack = config.package;
-                pack.name = config.info.name || pack.name;
-                pack.description = config.info.description || pack.description;
-                pack.version = config.version || pack.version;
-            }
-        })
-        .catch(function(e) {
-            console.error('Error while reading config file: ' + e);
-            process.exit(1);
+            return yaml.safeLoad(yamlSource);
         });
     }
+
+    var package_json = {};
+    try {
+        package_json = require(self._basePath + '/' + 'package.json');
+    } catch (e) {}
+
+    return action.then(function(config) {
+        config = self._sanitizeConfig(config, self.options);
+        config.package = package_json;
+        if (config.info) {
+            // for backwards compat
+            var pack = config.package;
+            pack.name = config.info.name || pack.name;
+            pack.description = config.info.description || pack.description;
+            pack.version = config.version || pack.version;
+        }
+        self.config = config;
+    })
+    .catch(function(e) {
+        console.error('Error while reading config file: ' + e);
+        process.exit(1);
+    });
+};
+
+/**
+ * Updates the config and sets instance properties.
+ *
+ * @param conf a configuration.
+ *             If undefined - config is loaded from config.yaml file
+ *             If Object - treated as already parsed configuration
+ *             If sting - treated a serialized yaml config
+ */
+ServiceRunner.prototype.updateConfig = function updateConfig(conf) {
+    var self = this;
+
+    return self.loadConfig(conf)
+    .then(function() {
+        var config = self.config;
+        var name = config.package && config.package.name || 'service-runner';
+        config.serviceName = name;
+
+        // Set up the logger
+        if (!config.logging.name) {
+            config.logging.name = name;
+        }
+
+        // And the statsd client
+        if (!config.metrics.name) {
+            config.metrics.name = name;
+        }
+    });
 };
 
 ServiceRunner.prototype._checkHeartbeat = function() {
@@ -202,7 +255,15 @@ ServiceRunner.prototype._runMaster = function() {
     process.on('SIGTERM', shutdown_master);
 
     // Set up rolling restarts
-    process.on('SIGHUP', this._rollingRestart.bind(this));
+    process.on('SIGHUP', function() {
+        return self.updateConfig()
+        .then(function() {
+            // Recreate loggers
+            self._logger.close();
+            self._logger = new Logger(self.config.logging);
+        })
+        .then(self._rollingRestart.bind(self));
+    });
 
     return this._startWorkers(this.config.num_workers)
     .then(function(workers) {
@@ -308,6 +369,10 @@ ServiceRunner.prototype._startWorkers = function(remainingWorkers) {
         self._saveBeat(worker);
         return new P(function(resolve) {
             fixCloseDisconnectListeners(worker);
+            worker.send({
+                type: 'config',
+                body: yaml.safeDump(self.config)
+            });
             worker.on('message', function(msg) {
                 if (msg.type === 'startup_finished') {
                     resolve(self._startWorkers(--remainingWorkers));
