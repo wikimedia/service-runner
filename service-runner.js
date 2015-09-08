@@ -52,11 +52,11 @@ function ServiceRunner(options) {
 
 ServiceRunner.prototype.run = function run(conf) {
     var self = this;
-    var action;
+    var configUpdateAction;
     if (cluster.isMaster) {
-        action = self.updateConfig(conf);
+        configUpdateAction = self.updateConfig(conf);
     } else {
-        action = new Promise(function(resolve, reject) {
+        configUpdateAction = new Promise(function(resolve, reject) {
             var timeout = setTimeout(function() {
                 reject(new Error('Timeout waiting for config in worker ' + process.pid));
             }, 3000);
@@ -71,16 +71,29 @@ ServiceRunner.prototype.run = function run(conf) {
             });
         });
     }
-    action = action
-    .then(self.processConfig.bind(self))
+    return configUpdateAction
     .then(function() {
+        var config = self.config;
+        // display the version
+        if (self.options.displayVersion) {
+            console.log(config.serviceName + ' ' + config.package.version);
+            process.exit(0);
+        }
+
+        // do we need to use Docker instead of starting normally ?
+        if (self.options.useDocker) {
+            self.options.basePath = self._basePath;
+            return docker(self.options, self.config);
+        }
+
+        self._logger = new Logger(config.logging);
+
         if (cluster.isMaster && self.config.num_workers > 0) {
             return self._runMaster();
         } else {
             return self._runWorker();
         }
     });
-    return action;
 };
 
 ServiceRunner.prototype._sanitizeConfig = function(conf, options) {
@@ -113,17 +126,24 @@ ServiceRunner.prototype.loadConfig = function loadConfig(conf) {
     var self = this;
     var action;
     if (conf && conf instanceof Object) {
-        self.config = this._sanitizeConfig(conf, self.options);
-        return P.resolve(conf);
-    } else if (conf && typeof conf === 'string') {
+        // Ready config object, no need to load from FS or parse yaml
         action = P.resolve(conf);
+    } else if (conf && typeof conf === 'string') {
+        // Yaml source provided as config string
+        action = P.try(function() {
+            return yaml.safeLoad(conf);
+        });
     } else {
+        // No config provided - load from file and parse yaml.
         var configFile = this.options.configFile;
         if (/^\./.test(configFile)) {
             // resolve relative paths
             configFile = path.resolve(self._basePath + '/' + configFile);
         }
-        action = fs.readFileAsync(configFile);
+        action = fs.readFileAsync(configFile)
+        .then(function(yamlSource) {
+            return yaml.safeLoad(yamlSource);
+        });
     }
 
     var package_json = {};
@@ -131,11 +151,8 @@ ServiceRunner.prototype.loadConfig = function loadConfig(conf) {
         package_json = require(self._basePath + '/' + 'package.json');
     } catch (e) {}
 
-    return action.then(function(yamlSource) {
-        self.config = self._sanitizeConfig(yaml.safeLoad(yamlSource), self.options);
-        // Make sure we have a sane config object by pulling in
-        // package.json info if necessary
-        var config = self.config;
+    return action.then(function(config) {
+        config = self._sanitizeConfig(config, self.options);
         config.package = package_json;
         if (config.info) {
             // for backwards compat
@@ -144,6 +161,7 @@ ServiceRunner.prototype.loadConfig = function loadConfig(conf) {
             pack.description = config.info.description || pack.description;
             pack.version = config.version || pack.version;
         }
+        self.config = config;
     })
     .catch(function(e) {
         console.error('Error while reading config file: ' + e);
@@ -166,6 +184,7 @@ ServiceRunner.prototype.updateConfig = function updateConfig(conf) {
     .then(function() {
         var config = self.config;
         var name = config.package && config.package.name || 'service-runner';
+        config.serviceName = name;
 
         // Set up the logger
         if (!config.logging.name) {
@@ -177,26 +196,6 @@ ServiceRunner.prototype.updateConfig = function updateConfig(conf) {
             config.metrics.name = name;
         }
     });
-};
-
-ServiceRunner.prototype.processConfig = function() {
-    var self = this;
-    var config = self.config;
-
-    var name = config.package && config.package.name || 'service-runner';
-    // display the version
-    if (self.options.displayVersion) {
-        console.log(name + ' ' + config.package.version);
-        process.exit(0);
-    }
-
-    // do we need to use Docker instead of starting normally ?
-    if (self.options.useDocker) {
-        self.options.basePath = self._basePath;
-        return docker(self.options, self.config);
-    }
-
-    self._logger = new Logger(config.logging);
 };
 
 ServiceRunner.prototype._checkHeartbeat = function() {
@@ -261,8 +260,8 @@ ServiceRunner.prototype._runMaster = function() {
         .then(function() {
             // Recreate loggers
             self._logger.close();
+            self._logger = new Logger(self.config.logging);
         })
-        .then(self.processConfig.bind(self))
         .then(self._rollingRestart.bind(self));
     });
 
