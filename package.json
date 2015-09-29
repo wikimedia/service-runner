@@ -8,9 +8,7 @@
   },
   "scripts": {
     "start": "./service-runner.js",
-    "test": "mocha",
-    "coverage": "istanbul cover _mocha -- -R spec",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -39,5 +37,10 @@
     "node-txstatsd": "^0.1.6",
     "yargs": "^3.24.0",
     "bunyan-syslog": "^0.3.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "mocha-jshint": "^2.2.3",
+    "mocha-jscs": "^1.2.0"
   }
 }
