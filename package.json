@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -38,6 +38,6 @@
     "node-statsd": "^0.1.1",
     "node-txstatsd": "^0.1.6",
     "yargs": "^3.24.0",
-    "bunyan-syslog": "^0.3.0"
+    "bunyan-syslog-udp": "^0.1.0"
   }
 }
