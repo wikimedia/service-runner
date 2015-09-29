@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "./service-runner.js",
-    "test": "mocha ./test/index.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
