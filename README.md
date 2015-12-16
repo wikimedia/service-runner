@@ -153,6 +153,23 @@ options.metrics.histogram('my_histogram', 42, ['foo', 'bar']);
 All metrics are automatically prefixed by the config-provided service name /
 graphite hierachy prefix to ensure a consistent graphite metric hierarchy.
 
+# Worker status tracking
+At any point of the execution the service can emit a `service_status` message
+to update the worker status. Statuses are tracked and reported when the worker
+dies or is killed on a timeout, which is useful for debugging failure reasons.
+
+To emit a status update use the following code:
+```javascript
+process.emit('service_status', {
+   type: 'request_processing_begin',
+   uri: req.uri.toString(),
+   some_other_property: 'some_value'
+})
+```
+
+Note: The status message could be an arbitrary object, however it must not contain
+cyclic references.
+
 ## Issue tracking
 Please report issues in [the service-runner phabricator
 project](https://phabricator.wikimedia.org/tag/service-runner/).
