@@ -7,10 +7,16 @@
  */
 'use strict';
 
+var cluster = require('cluster');
+
 // Upgrade to es6
 require('core-js/shim');
 
-var cluster = require('cluster');
+// Use babeljs for node < 4 compatibility
+if (process.version < 'v4.2') {
+    require("babel-register");
+}
+
 var Master = require('./lib/master');
 var Worker = require('./lib/worker');
 
