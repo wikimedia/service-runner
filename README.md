@@ -91,7 +91,7 @@ logging:
   # Map keys correspond to the event names, specified in the log levels
   # For example, in 'info/webrequest', the event name is 'webrequest'.
   # Map values specify the probability for such events to be logged
-  # disregards the configured logging level.
+  # regardless of the configured logging level.
   log_components:
     webrequest: 0.2
   streams:
