@@ -27,9 +27,9 @@
   },
   "homepage": "https://github.com/wikimedia/service-runner",
   "dependencies": {
-    "bluebird": "~2.8.2",
+    "bluebird": "^3.0.6",
     "bunyan": "^1.5.1",
-    "core-js": "^1.1.4",
+    "core-js": "^2.0.3",
     "extend": "^3.0.0",
     "gelf-stream": "^1.0.3",
     "hot-shots": "^2.2.0",
