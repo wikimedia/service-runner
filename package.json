@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -32,8 +32,8 @@
     "core-js": "^1.1.4",
     "extend": "^3.0.0",
     "gelf-stream": "^1.0.3",
+    "hot-shots": "^2.2.0",
     "js-yaml": "^3.4.2",
-    "node-statsd": "git+https://github.com/Pchelolo/node-statsd.git#batching",
     "node-txstatsd": "^0.1.6",
     "yargs": "^3.24.0",
     "bunyan-syslog-udp": "^0.1.0"
