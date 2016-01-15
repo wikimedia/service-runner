@@ -27,16 +27,18 @@
   },
   "homepage": "https://github.com/wikimedia/service-runner",
   "dependencies": {
+    "babel-preset-es2015-node4": "^2.0.2",
+    "babel-register": "^6.3.13",
     "bluebird": "~2.8.2",
     "bunyan": "^1.5.1",
+    "bunyan-syslog-udp": "^0.1.0",
     "core-js": "^1.1.4",
     "extend": "^3.0.0",
     "gelf-stream": "^1.0.3",
     "hot-shots": "^2.2.0",
     "js-yaml": "^3.4.2",
     "node-txstatsd": "^0.1.6",
-    "yargs": "^3.24.0",
-    "bunyan-syslog-udp": "^0.1.0"
+    "yargs": "^3.24.0"
   },
   "devDependencies": {
     "mocha": "^2.2.5",
