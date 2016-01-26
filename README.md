@@ -9,7 +9,7 @@ module.exports = function (options) {
     var config = options.config;
     // Logger instance
     var logger = options.logger;
-    // Metrics reporter (txstatsd, statsd)
+    // Metrics reporter (statsd,log)
     var metrics = options.metrics;
 
     // Start the app, returning a promise
@@ -41,7 +41,7 @@ Options:
 ```
 - [config loading](#config-loading)
 - flexible logging using bunyan, including logstash support via gelf: `logger.log('info/request', { message: 'foo', uri: req.uri })`
-- [metric reporting](#metric-reporting) using txstatsd or statsd: `statsd.timing('foo.GET.2xx', Date.now() - startTime)`
+- [metric reporting](#metric-reporting) using statsd or logging: `statsd.timing('foo.GET.2xx', Date.now() - startTime)`
 - heap dumps
 
 ## Usage

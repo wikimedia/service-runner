@@ -22,7 +22,7 @@ logging:
 
 # Statsd metrics reporter
 metrics:
-  type: txstatsd
+  type: statsd
   host: localhost
   port: 8125
 
