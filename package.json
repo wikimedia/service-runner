@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -27,19 +27,19 @@
   },
   "homepage": "https://github.com/wikimedia/service-runner",
   "dependencies": {
-    "bluebird": "^3.1.1",
+    "bluebird": "~3.2.1",
     "bunyan": "^1.5.1",
     "core-js": "^2.0.3",
     "extend": "^3.0.0",
     "gelf-stream": "^1.1.0",
-    "hot-shots": "^2.2.0",
+    "hot-shots": "^2.3.1",
     "js-yaml": "^3.5.2",
-    "yargs": "^3.31.0",
+    "yargs": "^3.32.0",
     "bunyan-syslog-udp": "^0.1.0"
   },
   "devDependencies": {
-    "mocha": "^2.3.4",
-    "mocha-jshint": "^2.2.6",
-    "mocha-jscs": "^4.0.0"
+    "mocha": "^2.4.5",
+    "mocha-jshint": "^2.3.0",
+    "mocha-jscs": "^4.2.0"
   }
 }
