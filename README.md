@@ -66,6 +66,16 @@ var ServiceRunner = require('service-runner');
 new ServiceRunner().run();
 ```
 
+All file paths in the config are relative to the application base path. 
+The base path is an absolute path to the folder where your application 
+is located (where `package.json` file is located).
+
+By default, we assume that your project depends on `service-runner` and 
+you follow standard node project layout. However, if a custom layout is 
+used, you must override the app base path with either:
+- `APP_BASE_PATH` environment variable
+- `app_base_path` config stanza.
+
 We are also working on a [standard
 template](https://github.com/wikimedia/service-template-node) for node
 services, which will set up this & other things for you.
