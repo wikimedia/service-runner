@@ -29,13 +29,14 @@
   "dependencies": {
     "bluebird": "~3.2.1",
     "bunyan": "^1.5.1",
+    "bunyan-syslog-udp": "^0.1.0",
     "core-js": "^2.0.3",
     "extend": "^3.0.0",
     "gelf-stream": "^1.1.0",
     "hot-shots": "^2.3.1",
     "js-yaml": "^3.5.2",
-    "yargs": "^3.32.0",
-    "bunyan-syslog-udp": "^0.1.0"
+    "semver": "^5.1.0",
+    "yargs": "^3.32.0"
   },
   "devDependencies": {
     "mocha": "^2.4.5",
