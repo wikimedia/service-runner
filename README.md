@@ -118,6 +118,15 @@ metrics:
     max_size: 1500 # Max size of the batch buffer (default: 1500)
     max_delay: 1000  # Max delay for an individual metric in milliseconds (default: 1000)
 
+# Rate limiter (enabled by default)
+ratelimit:
+  type: memory
+  # optional: Kademlia backend
+  # type: kad
+  # seeds:
+  #  - 123.456.789.233
+  #  - 456.789.90.2
+
 services:
   - name: parsoid
     # a relative path or the name of an npm package, if different from name
@@ -171,6 +180,52 @@ options.metrics.histogram('my_histogram', 42, ['foo', 'bar']);
 
 All metrics are automatically prefixed by the config-provided service name /
 graphite hierachy prefix to ensure a consistent graphite metric hierarchy.
+
+# Rate limiting
+
+Service-runner provides an efficient ratelimiter instance backed by
+[limitation](https://github.com/gwicke/limitation). All per-request checks are
+done in-memory for low latency and minimal overhead.
+
+To enforce a limit:
+```javascript
+// Sets limit to 10 req/s, returns true if above limit. 
+var isAboveLimit = options.ratelimiter.isAboveLimit('some_limit_key', 10);
+```
+
+Several backends are supported. By default, a simple in-memory backend is
+used. For clusters, a [Kademlia DHT](https://en.wikipedia.org/wiki/Kademlia)
+based backend is available. Basic Kademlia configuration:
+
+```yaml
+ratelimiter:
+  type: kademlia
+  # Cluster nodes
+  seeds:
+    # Port 3050 used by default
+    - 192.168.88.99
+```
+
+Advanced Kademlia options:
+```yaml
+ratelimiter:
+  type: kademlia
+  # Cluster nodes
+  seeds:
+    # Port 3050 used by default
+    - 192.168.88.99
+    - address: some.host.com
+      port: 6030
+
+  # Optional
+  # Address / port to listen on
+  # Default: localhost:3050, random port fall-back if port used
+  listen:
+    address: localhost
+    port: 3050
+  # Counter update / block interval; Default: 10000ms
+  interval: 10000
+```
 
 # Worker status tracking
 At any point of the execution the service can emit a `service_status` message
