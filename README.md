@@ -101,7 +101,7 @@ logging:
   # Map keys correspond to the full log level names. 
   # Map values specify the probability for such events to be logged
   # regardless of the configured logging level.
-  log_components:
+  sampled_levels:
     'trace/webrequest': 0.2
   streams:
   # Use gelf-stream -> logstash
