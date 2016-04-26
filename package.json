@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -42,6 +42,7 @@
   "devDependencies": {
     "mocha": "^2.4.5",
     "mocha-jshint": "^2.3.0",
-    "mocha-jscs": "^4.2.0"
+    "mocha-jscs": "^4.2.0",
+    "bunyan-prettystream": "git+https://github.com/hadfieldn/node-bunyan-prettystream#master"
   }
 }
