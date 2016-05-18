@@ -90,9 +90,6 @@ services, which will set up this & other things for you.
 # Set to 0 to run everything in a single process without clustering.
 num_workers: 1
 
-# Timeout for worker startup in milliseconds. Default is 60000.
-startup_timeout: 10000
-
 # Number of milliseconds to wait for a heartbeat from worker before killing
 # and restarting it
 worker_heartbeat_timeout: 7500
