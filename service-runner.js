@@ -19,6 +19,11 @@ var Worker = require('./lib/worker');
 // sudo sysctl -w net.core.somaxconn=4096
 cluster.schedulingPolicy = cluster.SCHED_NONE;
 
+// When forking, we should execute this script.
+if (cluster.isMaster) {
+    cluster.setupMaster({ exec: __filename });
+}
+
 function ServiceRunner(options) {
     if (cluster.isMaster) {
         this._impl = new Master(options);
