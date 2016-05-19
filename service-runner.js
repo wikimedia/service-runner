@@ -33,6 +33,10 @@ ServiceRunner.prototype.run = function run(conf) {
     return this._impl.run(conf);
 };
 
+ServiceRunner.prototype.stop = function stop() {
+    return this._impl.stop();
+};
+
 
 module.exports = ServiceRunner;
 
