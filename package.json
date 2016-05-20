@@ -21,7 +21,7 @@
     "statsd"
   ],
   "author": "Wikimedia service team <services@wikimedia.org>",
-  "license": "Apache2",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/wikimedia/service-runner/issues"
   },
