@@ -7,9 +7,6 @@
  */
 'use strict';
 
-// Upgrade to es6
-require('core-js/shim');
-
 var cluster = require('cluster');
 var Master = require('./lib/master');
 var Worker = require('./lib/worker');
