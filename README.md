@@ -12,7 +12,9 @@ module.exports = function (options) {
     // Metrics reporter (statsd,log)
     var metrics = options.metrics;
 
-    // Start the app, returning a promise
+    // Start the app, returning a promise.
+    // Return an object with a `close()` function for clean shut-down support.
+    // (ex: node's HTTP server instances).
     return startApp(config, logger, metrics);
 }
 ```
@@ -48,7 +50,7 @@ Options:
 ```bash
 npm install --save service-runner
 ```
-
+### As a binary
 In package.json, configure `npm start` to call service-runner:
 ```javascript
   "scripts": {
@@ -60,29 +62,53 @@ module parameter to your service's entry point.
 
 Finally, **start your service with `npm start`**. In npm >= 2.0 (node 0.12 or iojs), you can also pass parameters to `service-runner` like this: `npm start -- -c /etc/yourservice/config.yaml`.
 
-For node 0.10 support, you can create a small wrapper script like this:
+### As a library
+
+Service-runner can also be used to run services within an application. This is
+useful for node 0.10 support, but can also be used to run services for testing
+or other purposes.
+
+Example script for **starting** a service, using commandline options:
+
 ```javascript
 var ServiceRunner = require('service-runner');
-new ServiceRunner().run();
+new ServiceRunner().start();
 ```
+It is also possible to skip commandline options, and pass in a config
+directly to `ServiceRunner.start()` (see [the config section](#config_loading)
+for details on available options). Here is an example demonstrating this, as
+well as return values & the `stop()` method:
 
-All file paths in the config are relative to the application base path. 
-The base path is an absolute path to the folder where your application 
-is located (where `package.json` file is located).
+```javascript
+var ServiceRunner = require('service-runner');
+var runner = new ServiceRunner();
 
-By default, we assume that your project depends on `service-runner` and 
-you follow standard node project layout. However, if a custom layout is 
-used, you must override the app base path with either:
-- `APP_BASE_PATH` environment variable
-- `app_base_path` config stanza.
-
-We are also working on a [standard
-template](https://github.com/wikimedia/service-template-node) for node
-services, which will set up this & other things for you.
+var startupPromise = runner.start({
+    num_workers: 0,
+    services: [{
+        name: 'parsoid',
+        conf: {...}
+    }],
+    logging: {...},
+})
+.then(function(startupResults) {
+    // startupResults is an array of arrays of objects returned by each
+    // service. These objects should be JSON.stringify()-able.
+})
+.then(function() {
+    // To stop a service, call the stop() method
+    return runner.stop();
+});
+```
 
 ### Config loading
 - Default config locations in a project: `config.yaml` for a customized config,
     and `config.example.yaml` for the defaults.
+ - By default, we assume that your project depends on `service-runner` and 
+   you follow standard node project layout. However, if a custom layout is used,
+   you must override the app base path with either:
+     - `APP_BASE_PATH` environment variable
+     - `app_base_path` config stanza.
 - Default top-level config format (**draft**):
 
 ```yaml
@@ -141,6 +167,14 @@ services:
         interface: localhost
         # more per-service config settings
 ```
+
+All file paths in the config are relative to the application base path. 
+The base path is an absolute path to the folder where your application 
+is located (where `package.json` file is located).
+
+We are also working on a [standard
+template](https://github.com/wikimedia/service-template-node) for node
+services, which will set up this & other things for you.
 
 ### Metric reporting
 

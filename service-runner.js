@@ -29,10 +29,25 @@ function ServiceRunner(options) {
     }
 }
 
-ServiceRunner.prototype.run = function run(conf) {
-    return this._impl.run(conf);
+ServiceRunner.prototype.start = function start(conf) {
+    return this._impl.start(conf);
 };
 
+ServiceRunner.prototype.stop = function stop() {
+    return this._impl.stop();
+};
+
+// @deprecated
+ServiceRunner.prototype.run = function run(conf) {
+    var self = this;
+    return this.start(conf)
+    .then(function(res) {
+        // Delay the log call until the logger is actually set up.
+        self._impl._logger.log('warn/service-runner',
+                'ServiceRunner.run() is deprecated, and will be removed in v3.x.');
+        return res;
+    });
+};
 
 module.exports = ServiceRunner;
 
