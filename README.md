@@ -72,10 +72,10 @@ Example script for **starting** a service, using commandline options:
 
 ```javascript
 var ServiceRunner = require('service-runner');
-new ServiceRunner().run();
+new ServiceRunner().start();
 ```
 It is also possible to skip commandline options, and pass in a config
-directly to `ServiceRunner.run()` (see [the config section](#config_loading)
+directly to `ServiceRunner.start()` (see [the config section](#config_loading)
 for details on available options). Here is an example demonstrating this, as
 well as return values & the `stop()` method:
 
@@ -83,7 +83,7 @@ well as return values & the `stop()` method:
 var ServiceRunner = require('service-runner');
 var runner = new ServiceRunner();
 
-var startupPromise = runner.run({
+var startupPromise = runner.start({
     num_workers: 0,
     services: [{
         name: 'parsoid',
