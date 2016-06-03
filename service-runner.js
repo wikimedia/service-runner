@@ -53,5 +53,5 @@ module.exports = ServiceRunner;
 
 if (module.parent === null) {
     // Run as a script: Start up
-    new ServiceRunner().run();
+    new ServiceRunner().start();
 }
