@@ -134,6 +134,11 @@ logging:
   - type: gelf
     host: logstash1003.eqiad.wmnet
     port: 12201
+  # For pretty-printed (non-JSON) console output, either pipe output via a script:
+  #    | node_modules/.bin/bunyan
+  # or insteall the pretty stream lib and add a new stream (uncomment last line, should have 2 spaces before the '-')
+  #    cd node_modules/service-runner/ && npm install bunyan-prettystream
+  # - type: bunyan-prettystream
 
 # Statsd metrics reporter
 metrics:
