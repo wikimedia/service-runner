@@ -34,7 +34,7 @@
     "gelf-stream": "^1.1.0",
     "hot-shots": "^2.3.1",
     "js-yaml": "^3.6.1",
-    "limitation": "^0.1.8",
+    "limitation": "^0.1.9",
     "semver": "^5.1.0",
     "yargs": "^4.7.0"
   },
