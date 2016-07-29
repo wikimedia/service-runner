@@ -41,13 +41,12 @@ ServiceRunner.prototype.stop = function stop() {
 ServiceRunner.prototype.run = function run(conf) {
     var self = this;
     return this.start(conf)
-    .then(function(res) {
+    .tap(function() {
         // Delay the log call until the logger is actually set up.
         if (self._impl._logger) {
             self._impl._logger.log('warn/service-runner',
                 'ServiceRunner.run() is deprecated, and will be removed in v3.x.');
         }
-        return res;
     });
 };
 
