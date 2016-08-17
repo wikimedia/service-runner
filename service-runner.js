@@ -14,7 +14,8 @@ var Worker = require('./lib/worker');
 // Disable cluster RR balancing; direct socket sharing has better throughput /
 // lower overhead. Also bump up somaxconn with this command:
 // sudo sysctl -w net.core.somaxconn=4096
-cluster.schedulingPolicy = cluster.SCHED_NONE;
+// Higher throughput, but worse load distribution can be achieved with:
+// cluster.schedulingPolicy = cluster.SCHED_NONE;
 
 // When forking, we should execute this script.
 if (cluster.isMaster) {
