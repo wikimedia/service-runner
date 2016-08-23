@@ -168,6 +168,17 @@ services:
         # more per-service config settings
 ```
 
+In the configuration file itself, you can also use environment variables:
+
+```yaml
+field: '{env(ENV_VAR_NAME[,default_value])}'
+```
+
+The service's environment will be inspected, and if the value of `ENV_VAR_NAME`
+is defined, it will be used in the configuration. Additionally, one can also
+supply a default value in case the environment does not contain the sought
+value.
+
 All file paths in the config are relative to the application base path. 
 The base path is an absolute path to the folder where your application 
 is located (where `package.json` file is located).
