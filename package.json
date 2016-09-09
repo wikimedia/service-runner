@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -27,21 +27,21 @@
   },
   "homepage": "https://github.com/wikimedia/service-runner",
   "dependencies": {
-    "bluebird": "^3.4.0",
+    "bluebird": "^3.4.6",
     "bunyan": "^1.8.1",
     "bunyan-syslog-udp": "^0.1.0",
     "extend": "^3.0.0",
-    "gelf-stream": "^1.1.0",
-    "hot-shots": "^2.3.1",
+    "gelf-stream": "^1.1.1",
+    "hot-shots": "^4.2.0",
     "js-yaml": "^3.6.1",
     "limitation": "^0.1.9",
-    "semver": "^5.1.0",
-    "yargs": "^4.7.0"
+    "semver": "^5.3.0",
+    "yargs": "^5.0.0"
   },
   "devDependencies": {
-    "mocha": "^2.4.5",
+    "mocha": "^3.0.2",
     "mocha-jshint": "^2.3.1",
-    "mocha-jscs": "^5.0.0",
+    "mocha-jscs": "^5.0.1",
     "bunyan-prettystream": "git+https://github.com/hadfieldn/node-bunyan-prettystream#master"
   }
 }
