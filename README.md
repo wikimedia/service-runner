@@ -103,7 +103,7 @@ var startupPromise = runner.start({
 
 ### Config loading
 - Default config locations in a project: `config.yaml` for a customized config,
-    and `config.example.yaml` for the defaults.
+    and `config.example.yaml` for an example config for a service.
  - By default, we assume that your project depends on `service-runner` and 
    you follow standard node project layout. However, if a custom layout is used,
    you must override the app base path with either:
