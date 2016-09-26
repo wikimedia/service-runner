@@ -134,6 +134,9 @@ logging:
   - type: gelf
     host: logstash1003.eqiad.wmnet
     port: 12201
+    # Alternatively you can provide a comma-separated list of host:port pairs,
+    # the server to use will be selected randomly on startup
+    # uris: logstash1001.eqiad.wmnet:12201,logstash1003.eqiad.wmnet:12201
 
 # Statsd metrics reporter
 metrics:
