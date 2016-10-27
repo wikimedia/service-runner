@@ -34,6 +34,7 @@ Options:
                                              [string] [default: "./config.yaml"]
   -f, --force        force the operation to execute   [boolean] [default: false]
   -d, --deploy-repo  build only the deploy repo       [boolean] [default: false]
+  -s, --reshrinkwrap re-generate shrinkwrap.json      [boolean] [default: false]
   -r, --review       send the patch to Gerrit after building the repo
                                                       [boolean] [default: false]
   --verbose          be verbose                       [boolean] [default: false]
@@ -104,7 +105,7 @@ var startupPromise = runner.start({
 ### Config loading
 - Default config locations in a project: `config.yaml` for a customized config,
     and `config.example.yaml` for an example config for a service.
- - By default, we assume that your project depends on `service-runner` and 
+ - By default, we assume that your project depends on `service-runner` and
    you follow standard node project layout. However, if a custom layout is used,
    you must override the app base path with either:
      - `APP_BASE_PATH` environment variable
@@ -124,7 +125,7 @@ worker_heartbeat_timeout: 7500
 logging:
   level: info
   # Sets up sample logging for some 'interesting' events.
-  # Map keys correspond to the full log level names. 
+  # Map keys correspond to the full log level names.
   # Map values specify the probability for such events to be logged
   # regardless of the configured logging level.
   sampled_levels:
@@ -182,8 +183,8 @@ is defined, it will be used in the configuration. Additionally, one can also
 supply a default value in case the environment does not contain the sought
 value.
 
-All file paths in the config are relative to the application base path. 
-The base path is an absolute path to the folder where your application 
+All file paths in the config are relative to the application base path.
+The base path is an absolute path to the folder where your application
 is located (where `package.json` file is located).
 
 We are also working on a [standard
@@ -237,7 +238,7 @@ done in-memory for low latency and minimal overhead.
 
 To enforce a limit:
 ```javascript
-// Sets limit to 10 req/s, returns true if above limit. 
+// Sets limit to 10 req/s, returns true if above limit.
 var isAboveLimit = options.ratelimiter.isAboveLimit('some_limit_key', 10);
 ```
 
