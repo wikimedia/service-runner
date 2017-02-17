@@ -157,10 +157,12 @@ ratelimit:
   #  - 123.456.789.233
   #  - 456.789.90.2
 
-# DNS caching settings
+# DNS caching, switched on by default. To disable caching use:
+# dns_cache: false
+# To specify caching parameters use:
 dns_cache:
-  ttl: 5 # Time-to-live for cache entries, in seconds
-  size: 100 # Optional cache size, default: 100
+  ttl: 5 # Time-to-live for cache entries, in seconds. Default: 5
+  size: 100 # Optional cache size. Default: 100  
 
 services:
   - name: parsoid
