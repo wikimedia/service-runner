@@ -157,6 +157,11 @@ ratelimit:
   #  - 123.456.789.233
   #  - 456.789.90.2
 
+# DNS caching settings
+dns_cache:
+  ttl: 5 # Time-to-live for cache entries, in seconds
+  size: 10 # Optional cache size, default: 100
+
 services:
   - name: parsoid
     # a relative path or the name of an npm package, if different from name
