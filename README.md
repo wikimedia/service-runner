@@ -160,7 +160,7 @@ ratelimit:
 # DNS caching settings
 dns_cache:
   ttl: 5 # Time-to-live for cache entries, in seconds
-  size: 10 # Optional cache size, default: 100
+  size: 100 # Optional cache size, default: 100
 
 services:
   - name: parsoid
