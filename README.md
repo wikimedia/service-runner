@@ -130,6 +130,12 @@ logging:
   # regardless of the configured logging level.
   sampled_levels:
     'trace/webrequest': 0.2
+  # Set up the limiter for logging. When the rate of logs is close to the limit,
+  # it starts to increase the probability of discarding the logs of same kind.
+  # For default parameters use rate_limit: true
+  rate_limit:
+    limit: 2000 # How many per interval to log. Default: 1000
+    interval: 100 # Interval of rate sampling, ms. Default: 1000    
   streams:
   # Use gelf-stream -> logstash
   - type: gelf
