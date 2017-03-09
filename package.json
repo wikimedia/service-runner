@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "2.2.5",
+  "version": "3.0.0",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -27,6 +27,9 @@
     "url": "https://github.com/wikimedia/service-runner/issues"
   },
   "homepage": "https://github.com/wikimedia/service-runner",
+  "engines": {
+    "node": ">=4.2.2"
+  },
   "dependencies": {
     "bluebird": "^3.4.7",
     "bunyan": "^1.8.5",
@@ -41,9 +44,10 @@
     "dnscache": "^1.0.1"
   },
   "devDependencies": {
+    "eslint-config-node-services": "^2.0.2",
     "mocha": "^3.2.0",
+    "mocha-eslint": "^3.0.1",
     "mocha-jshint": "^2.3.1",
-    "mocha-jscs": "^5.0.1",
     "bunyan-prettystream": "git+https://github.com/hadfieldn/node-bunyan-prettystream#master"
   }
 }
