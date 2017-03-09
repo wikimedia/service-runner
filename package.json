@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "eslint-config-node-services": "^2.0.2",
+    "eslint-plugin-json": "^1.2.0",
     "mocha": "^3.2.0",
     "mocha-eslint": "^3.0.1",
     "mocha-jshint": "^2.3.1",
