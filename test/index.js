@@ -1,4 +1,4 @@
 "use strict";
 
 require('mocha-jshint')();
-require('mocha-jscs')();
+require('mocha-eslint')(['lib']);
