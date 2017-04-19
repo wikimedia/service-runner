@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "2.2.5",
+  "version": "2.3.0",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -31,22 +31,22 @@
     "node": ">=4.2.2"
   },
   "dependencies": {
-    "bluebird": "^3.4.7",
-    "bunyan": "^1.8.5",
+    "bluebird": "^3.5.0",
+    "bunyan": "^1.8.10",
     "bunyan-syslog-udp": "^0.1.0",
     "extend": "^3.0.0",
     "gelf-stream": "^1.1.1",
-    "hot-shots": "^4.3.1",
-    "js-yaml": "^3.8.1",
+    "hot-shots": "^4.4.0",
+    "js-yaml": "^3.8.3",
     "limitation": "^0.2.0",
     "semver": "^5.3.0",
-    "yargs": "^6.6.0",
+    "yargs": "^7.1.0",
     "dnscache": "^1.0.1"
   },
   "devDependencies": {
-    "eslint-config-node-services": "^2.0.2",
+    "eslint-config-node-services": "^2.1.1",
     "eslint-plugin-json": "^1.2.0",
-    "eslint-plugin-jsdoc": "^3.0.0",
+    "eslint-plugin-jsdoc": "^3.0.2",
     "mocha": "^3.2.0",
     "mocha-eslint": "^3.0.1",
     "mocha-jshint": "^2.3.1",
