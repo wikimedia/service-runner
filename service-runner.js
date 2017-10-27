@@ -12,6 +12,8 @@
 const cluster = require('cluster');
 const Master = require('./lib/master');
 const Worker = require('./lib/worker');
+const Logger = require('./lib/logger');
+const makeStatsD = require('./lib/statsd');
 
 // Disable cluster RR balancing; direct socket sharing has better throughput /
 // lower overhead. Also bump up somaxconn with this command:
@@ -52,6 +54,9 @@ class ServiceRunner {
             }
         });
     }
+
+    static getLogger(loggerConf) { return new Logger(loggerConf); }
+    static getMetrics(metricsConf, logger) { return makeStatsD(metricsConf, logger); }
 }
 
 module.exports = ServiceRunner;
