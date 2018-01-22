@@ -34,7 +34,6 @@ Options:
                                              [string] [default: "./config.yaml"]
   -f, --force        force the operation to execute   [boolean] [default: false]
   -d, --deploy-repo  build only the deploy repo       [boolean] [default: false]
-  -s, --reshrinkwrap re-generate shrinkwrap.json      [boolean] [default: false]
   -r, --review       send the patch to Gerrit after building the repo
                                                       [boolean] [default: false]
   --verbose          be verbose                       [boolean] [default: false]
