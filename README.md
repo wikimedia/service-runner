@@ -114,7 +114,15 @@ var startupPromise = runner.start({
 ```yaml
 # Number of worker processes to spawn.
 # Set to 0 to run everything in a single process without clustering.
-num_workers: 1
+num_workers: ncpu
+
+# Number of workers to start in parallel after the first worker.
+# The first worker is always started independently. After it has completed
+# its start-up, this number controls the number of workers to start in
+# parallel until `num_workers` have been started. Note that setting this
+# number to a too high a value might lead to high resource consumption
+# (especially of CPU) during the start-up process.
+startup_concurrency: 2
 
 # Number of milliseconds to wait for a heartbeat from worker before killing
 # and restarting it
