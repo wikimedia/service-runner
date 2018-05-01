@@ -34,7 +34,6 @@
     "bluebird": "^3.5.0",
     "bunyan": "^1.8.10",
     "bunyan-syslog-udp": "^0.1.0",
-    "extend": "^3.0.0",
     "gelf-stream": "^1.1.1",
     "hot-shots": "^4.4.0",
     "js-yaml": "^3.8.3",
