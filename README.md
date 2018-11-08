@@ -110,7 +110,8 @@ var startupPromise = runner.start({
      - `APP_BASE_PATH` environment variable
      - `app_base_path` config stanza.
 - If project requires cancellable promises (which is disabled by default) you must set the
-`APP_ENABLE_CANCELLABLE_PROMISES` environment variable.
+`APP_ENABLE_CANCELLABLE_PROMISES` environment variable to non-empty value (like `1` or `true`). For more information about
+ cancellable promises please refer to [Bluebird documentation](http://bluebirdjs.com/docs/api/cancellation.html).
 - Default top-level config format (**draft**):
 
 ```yaml
