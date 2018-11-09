@@ -68,7 +68,7 @@ if (module.parent === null) {
     // like that.
     if (process.env.APP_ENABLE_CANCELLABLE_PROMISES) {
         P.config({
-            cancellable: true
+            cancellation: true
         });
     }
     // Run as a script: Start up
