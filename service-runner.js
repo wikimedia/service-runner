@@ -14,6 +14,7 @@ const Master = require('./lib/master');
 const Worker = require('./lib/worker');
 const Logger = require('./lib/logger');
 const makeStatsD = require('./lib/statsd');
+const P = require('bluebird');
 
 // Disable cluster RR balancing; direct socket sharing has better throughput /
 // lower overhead. Also bump up somaxconn with this command:
@@ -62,6 +63,14 @@ class ServiceRunner {
 module.exports = ServiceRunner;
 
 if (module.parent === null) {
+    // Cancellable promises have to enabled before we instantiate any promises. Because
+    // ServiceRunner heavily relies on promises this is the best place to leave the config
+    // like that.
+    if (process.env.APP_ENABLE_CANCELLABLE_PROMISES) {
+        P.config({
+            cancellable: true
+        });
+    }
     // Run as a script: Start up
     new ServiceRunner().start();
 }
