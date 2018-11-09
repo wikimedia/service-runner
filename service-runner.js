@@ -63,8 +63,9 @@ class ServiceRunner {
 module.exports = ServiceRunner;
 
 if (module.parent === null) {
-    // Cancellable promises have to enabled before we start any promise. Because ServiceRunner
-    // heavily rely on promises this is the best place to leave the config like that
+    // Cancellable promises have to enabled before we instantiate any promises. Because
+    // ServiceRunner heavily relies on promises this is the best place to leave the config
+    // like that.
     if (process.env.APP_ENABLE_CANCELLABLE_PROMISES) {
         P.config({
             cancellable: true
