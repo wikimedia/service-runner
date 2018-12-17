@@ -104,14 +104,20 @@ var startupPromise = runner.start({
 ### Config loading
 - Default config locations in a project: `config.yaml` for a customized config,
     and `config.example.yaml` for an example config for a service.
+- You can specify the location of the configuration file in two ways: by using
+  the `-c`/`--config` command-line option; or by setting the `APP_CONFIG_PATH`
+  environment variable. If both are specified, the environment variable takes
+  precedence.
  - By default, we assume that your project depends on `service-runner` and
    you follow standard node project layout. However, if a custom layout is used,
    you must override the app base path with either:
      - `APP_BASE_PATH` environment variable
      - `app_base_path` config stanza.
-- If the project requires cancellable promises (which are disabled by default) you must set the
-`APP_ENABLE_CANCELLABLE_PROMISES` environment variable to a non-empty and truth-y value (like `1` or `true`). For more information about
- cancellable promises please refer to [Bluebird documentation](http://bluebirdjs.com/docs/api/cancellation.html).
+- If the project requires cancellable promises (which are disabled by default)
+  you must set the `APP_ENABLE_CANCELLABLE_PROMISES` environment variable to a
+  non-empty and truth-y value (like `1` or `true`). For more information about
+  cancellable promises please refer to the
+  [Bluebird documentation](http://bluebirdjs.com/docs/api/cancellation.html).
 - Default top-level config format (**draft**):
 
 ```yaml
