@@ -1,10 +1,11 @@
 'use strict';
 
 var http = require('http');
-module.exports = function(opts) {
+module.exports = function (opts) {
     console.log(opts);
-    return new Promise(function(resolve, reject) {
-        http.createServer(function(req, res) {
+    // eslint-disable-next-line no-unused-vars
+    return new Promise(function (resolve, reject) {
+        http.createServer(function (req, res) {
             opts.logger.log('info', {
                 uri: req.url
             });
@@ -16,7 +17,7 @@ module.exports = function(opts) {
                 res.end('bar');
             } else {
                 res.writeHead(200, {
-                    'Content-Type': 'text/plain',
+                    'Content-Type': 'text/plain'
                 });
                 res.end('okay');
             }
