@@ -9,12 +9,12 @@
  * which is especially useful for debugging.
  */
 
-const cluster = require('cluster');
-const Master = require('./lib/master');
-const Worker = require('./lib/worker');
-const Logger = require('./lib/logger');
-const makeStatsD = require('./lib/statsd');
-const P = require('bluebird');
+const cluster = require( 'cluster' );
+const Master = require( './lib/master' );
+const Worker = require( './lib/worker' );
+const Logger = require( './lib/logger' );
+const makeStatsD = require( './lib/statsd' );
+const P = require( 'bluebird' );
 
 // Disable cluster RR balancing; direct socket sharing has better throughput /
 // lower overhead. Also bump up somaxconn with this command:
@@ -23,54 +23,54 @@ const P = require('bluebird');
 // cluster.schedulingPolicy = cluster.SCHED_NONE;
 
 // When forking, we should execute this script.
-if (cluster.isMaster) {
-    cluster.setupMaster({ exec: __filename });
+if ( cluster.isMaster ) {
+	cluster.setupMaster( { exec: __filename } );
 }
 
 class ServiceRunner {
-    constructor(options) {
-        if (cluster.isMaster) {
-            this._impl = new Master(options);
-        } else {
-            this._impl = new Worker(options);
-        }
-    }
+	constructor( options ) {
+		if ( cluster.isMaster ) {
+			this._impl = new Master( options );
+		} else {
+			this._impl = new Worker( options );
+		}
+	}
 
-    start(conf) {
-        return this._impl.start(conf);
-    }
+	start( conf ) {
+		return this._impl.start( conf );
+	}
 
-    stop() {
-        return this._impl.stop();
-    }
+	stop() {
+		return this._impl.stop();
+	}
 
-    // @deprecated
-    run(conf) {
-        return this.start(conf)
-        .tap(() => {
-            // Delay the log call until the logger is actually set up.
-            if (this._impl._logger) {
-                this._impl._logger.log('warn/service-runner',
-                    'ServiceRunner.run() is deprecated, and will be removed in v3.x.');
-            }
-        });
-    }
+	// @deprecated
+	run( conf ) {
+		return this.start( conf )
+			.tap( () => {
+				// Delay the log call until the logger is actually set up.
+				if ( this._impl._logger ) {
+					this._impl._logger.log( 'warn/service-runner',
+						'ServiceRunner.run() is deprecated, and will be removed in v3.x.' );
+				}
+			} );
+	}
 
-    static getLogger(loggerConf) { return new Logger(loggerConf); }
-    static getMetrics(metricsConf, logger) { return makeStatsD(metricsConf, logger); }
+	static getLogger( loggerConf ) { return new Logger( loggerConf ); }
+	static getMetrics( metricsConf, logger ) { return makeStatsD( metricsConf, logger ); }
 }
 
 module.exports = ServiceRunner;
 
-if (module.parent === null) {
-    // Cancellable promises have to enabled before we instantiate any promises. Because
-    // ServiceRunner heavily relies on promises this is the best place to leave the config
-    // like that.
-    if (process.env.APP_ENABLE_CANCELLABLE_PROMISES) {
-        P.config({
-            cancellation: true
-        });
-    }
-    // Run as a script: Start up
-    new ServiceRunner().start();
+if ( module.parent === null ) {
+	// Cancellable promises have to enabled before we instantiate any promises. Because
+	// ServiceRunner heavily relies on promises this is the best place to leave the config
+	// like that.
+	if ( process.env.APP_ENABLE_CANCELLABLE_PROMISES ) {
+		P.config( {
+			cancellation: true
+		} );
+	}
+	// Run as a script: Start up
+	new ServiceRunner().start();
 }
