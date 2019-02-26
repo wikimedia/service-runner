@@ -9,7 +9,8 @@
   "scripts": {
     "postpublish": "git tag -a \"v${npm_package_version}\" -m \"${npm_package_name}@${npm_package_version} release\" && git push upstream \"v${npm_package_version}\"",
     "start": "./service-runner.js",
-    "test": "mocha"
+    "test": "npm run lint",
+    "lint": "node_modules/.bin/eslint --cache --max-warnings 0 --ext .js ."
   },
   "repository": {
     "type": "git",
@@ -43,13 +44,10 @@
     "dnscache": "^1.0.1"
   },
   "devDependencies": {
-    "eslint": "^4.12.0",
-    "eslint-config-node-services": "^2.2.5",
-    "eslint-config-wikimedia": "^0.5.0",
+    "eslint": "^5.14.0",
+    "eslint-config-wikimedia": "^0.10.1",
     "eslint-plugin-json": "^1.2.1",
     "eslint-plugin-jsdoc": "^3.9.1",
-    "mocha": "^5.2.0",
-    "mocha-eslint": "^4.1.0",
     "bunyan-prettystream": "git+https://github.com/hadfieldn/node-bunyan-prettystream#master"
   }
 }
