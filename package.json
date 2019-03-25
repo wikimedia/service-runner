@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "2.6.14",
+  "version": "2.6.15",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -34,7 +34,7 @@
   "dependencies": {
     "bluebird": "^3.5.2",
     "bunyan": "^1.8.12",
-    "bunyan-syslog-udp": "^0.1.0",
+    "bunyan-syslog-udp": "^0.2.0",
     "gelf-stream": "^1.1.1",
     "hot-shots": "^5.9.1",
     "js-yaml": "^3.12.0",
