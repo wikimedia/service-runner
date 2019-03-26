@@ -1,4 +1,4 @@
-# Number of worker processes to spawn. 
+# Number of worker processes to spawn.
 # Set to 0 to run everything in a single process without clustering.
 # Use 'ncpu' to run as many workers as there are CPU units
 num_workers: ncpu
@@ -29,11 +29,11 @@ metrics:
 services:
   - name: test
     # a relative path or the name of an npm package, if different from name
-    module: ./test/httpserver.js
+    module: ./some_server_module.js
 
     # optionally, a version constraint of the npm package
     # version: ^0.4.0
-    
+
     # per-service config
     conf:
       port: 12345
