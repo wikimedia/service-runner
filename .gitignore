@@ -7,3 +7,4 @@ npm-debug.log
 Dockerfile
 package-lock.json
 .eslintcache
+.nyc_output

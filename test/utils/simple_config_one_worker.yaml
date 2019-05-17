@@ -1,0 +1,9 @@
+num_workers: 1
+logging:
+  level: fatal
+services:
+  - name: test
+    module: test/utils/simple_server.js
+    conf:
+      port: 12345
+

@@ -1,7 +1,7 @@
 'use strict';
 
 const P = require('bluebird');
-const ServiceRunner = require('service-runner');
+const ServiceRunner = require('../service-runner');
 
 class TestServer {
     constructor(configPath) {
