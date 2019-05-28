@@ -72,10 +72,9 @@ describe('service-runner tests', () => {
         .finally(() => server.stop());
     });
 
-    // TODO: unskip after https://github.com/wikimedia/service-runner/pull/210 is done.
-    it.skip('Must remove all listeners on stop', (done) => {
+    it('Must remove all listeners on stop', (done) => {
         const DEFAULT_MAX_LISTENERS = require('events').EventEmitter.defaultMaxListeners;
-        const server = new TestServer(`${__dirname}/../utils/simple_config.yaml`);
+        const server = new TestServer(`${__dirname}/../utils/simple_config_two_workers.yaml`);
         const warningListener = (warning) => {
             if (!done.called) {
                 done.called = true;
