@@ -170,8 +170,8 @@ ratelimit:
   # optional: Kademlia backend
   # type: kad
   # seeds:
-  #  - 123.456.789.233
-  #  - 456.789.90.2
+  #  - 192.0.2.10
+  #  - 192.0.2.20
 
 # DNS caching, switched on by default. To disable caching use:
 # dns_cache: false
