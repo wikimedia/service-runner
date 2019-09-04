@@ -157,12 +157,16 @@ logging:
 
 # Statsd metrics reporter
 metrics:
-  type: statsd
-  host: localhost
-  port: 8125
-  batch: # Metrics batching options. Supported only for `statsd` reporter type
-    max_size: 1500 # Max size of the batch buffer (default: 1500)
-    max_delay: 1000  # Max delay for an individual metric in milliseconds (default: 1000)
+  - type: statsd
+    host: localhost
+    port: 8125
+    batch: # Metrics batching options. Supported only for `statsd` reporter type
+      max_size: 1500 # Max size of the batch buffer (default: 1500)
+      max_delay: 1000  # Max delay for an individual metric in milliseconds (default: 1000)
+
+# Prometheus metrics endpoint
+  - type: prometheus
+    port: 9000
 
 # Rate limiter (enabled by default)
 ratelimit:

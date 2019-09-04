@@ -20,16 +20,18 @@ logging:
 #    host: logstash1003.eqiad.wmnet
 #    port: 12201
 
-# Statsd metrics reporter
+# Metrics configuration
 metrics:
-  type: statsd
-  host: localhost
-  port: 8125
+  - type: prometheus
+    port: 9000
+  - type: statsd
+    host: localhost
+    port: 8125
 
 services:
   - name: test
     # a relative path or the name of an npm package, if different from name
-    module: ./some_server_module.js
+    module: ./test/utils/simple_server.js
 
     # optionally, a version constraint of the npm package
     # version: ^0.4.0
