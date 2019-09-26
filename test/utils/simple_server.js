@@ -4,21 +4,29 @@ const http = require('http');
 const P = require('bluebird');
 
 module.exports = (options) => {
-    if (options.prometheus) {
-        this.hitcounter = new options.prometheus.Counter({
-            name: 'hitcount',
-            help: 'a hit counter',
-            labelNames: ['worker_id']
-        });
-    }
-
     const server = http.createServer((req, res) => {
-        if (this.hitcounter) {
-            this.hitcounter.labels(options.config.worker_id).inc();
-        }
-        if (options.metrics) {
-            options.metrics.increment(`${options.config.worker_id}.hitcount`);
-        }
+        // supported interface
+        options.metrics.makeMetric({
+            type: 'Counter',
+            name: 'simple_server.hitcount',
+            prometheus: {
+                name: 'hitcount',
+                help: 'a hit counter'
+            },
+            labels: {
+                names: ['worker_id']
+            }
+        }).increment(1, [options.config.worker_id]);
+        options.metrics.makeMetric({
+            type: 'Counter',
+            name: 'simple_server.hitcount.total',
+            prometheus: {
+                name: 'hitcount_total',
+                help: 'a hit counter'
+            }
+        }).increment();
+        // deprecated interface
+        options.metrics.increment(`simple_server.deprecated_interface.worker_${options.config.worker_id}.hitcount`);
         res.end('ok\n');
     });
     return new P((resolve, reject) => {
