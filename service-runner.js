@@ -13,7 +13,7 @@ const cluster = require('cluster');
 const Master = require('./lib/master');
 const Worker = require('./lib/worker');
 const Logger = require('./lib/logger');
-const makeStatsD = require('./lib/statsd');
+const makeMetrics = require('./lib/metrics');
 const P = require('bluebird');
 
 // Disable cluster RR balancing; direct socket sharing has better throughput /
@@ -57,7 +57,7 @@ class ServiceRunner {
     }
 
     static getLogger(loggerConf) { return new Logger(loggerConf); }
-    static getMetrics(metricsConf, logger) { return makeStatsD(metricsConf, logger); }
+    static getMetrics(metricsConf, logger) { return makeMetrics(metricsConf, logger); }
 }
 
 module.exports = ServiceRunner;
