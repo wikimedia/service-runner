@@ -43,7 +43,7 @@ Options:
 ```
 - [config loading](#config-loading)
 - flexible logging using bunyan, including logstash support via gelf: `logger.log('info/request', { message: 'foo', uri: req.uri })`
-- [metric reporting](#metric-reporting) using statsd or logging: `statsd.timing('foo.GET.2xx', Date.now() - startTime)`
+- [metric reporting](#metric-reporting) using statsd, logging, and/or Prometheus. (See lib/metrics/index.js:Metrics.makeMetric())
 - heap dumps
 
 ## Usage
