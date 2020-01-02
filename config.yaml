@@ -13,7 +13,7 @@ worker_heap_limit_mb: 500
 
 # Logger info
 logging:
-  level: info
+  level: trace
 #  streams:
 #  # Use gelf-stream -> logstash
 #  - type: gelf
@@ -27,6 +27,7 @@ metrics:
   - type: statsd
     host: localhost
     port: 8125
+  - type: log
 
 services:
   - name: test
