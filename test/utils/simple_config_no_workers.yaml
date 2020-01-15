@@ -1,6 +1,12 @@
 num_workers: 0
 logging:
   level: fatal
+metrics:
+  - type: prometheus
+    port: 9000
+  - type: statsd
+    host: localhost
+    port: 8125
 services:
   - name: test
     module: test/utils/simple_server.js

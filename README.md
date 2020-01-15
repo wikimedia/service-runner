@@ -43,7 +43,7 @@ Options:
 ```
 - [config loading](#config-loading)
 - flexible logging using bunyan, including logstash support via gelf: `logger.log('info/request', { message: 'foo', uri: req.uri })`
-- [metric reporting](#metric-reporting) using statsd or logging: `statsd.timing('foo.GET.2xx', Date.now() - startTime)`
+- [metric reporting](#metric-reporting) using statsd, logging, and/or Prometheus. (See lib/metrics/index.js:Metrics.makeMetric())
 - heap dumps
 
 ## Usage
@@ -157,12 +157,16 @@ logging:
 
 # Statsd metrics reporter
 metrics:
-  type: statsd
-  host: localhost
-  port: 8125
-  batch: # Metrics batching options. Supported only for `statsd` reporter type
-    max_size: 1500 # Max size of the batch buffer (default: 1500)
-    max_delay: 1000  # Max delay for an individual metric in milliseconds (default: 1000)
+  - type: statsd
+    host: localhost
+    port: 8125
+    batch: # Metrics batching options. Supported only for `statsd` reporter type
+      max_size: 1500 # Max size of the batch buffer (default: 1500)
+      max_delay: 1000  # Max delay for an individual metric in milliseconds (default: 1000)
+
+# Prometheus metrics endpoint
+  - type: prometheus
+    port: 9000
 
 # Rate limiter (enabled by default)
 ratelimit:

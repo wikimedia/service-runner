@@ -1,5 +1,7 @@
 'use strict';
 
+const preq = require('preq');
+
 const TestServer = require('../TestServer');
 const cluster = require('cluster');
 const assert = require('assert');
@@ -100,4 +102,85 @@ describe('service-runner tests', () => {
         })
         .finally(() => process.removeListener('warning', warningListener));
     });
+
+    // preq prevents the AssertionErrors from surfacing and failing the test
+    // performing the test this way presents them correctly
+    it('Must increment hitcount metrics when hit, no workers', () => {
+        const server = new TestServer(`${__dirname}/../utils/simple_config_no_workers.yaml`);
+        const response = { status: null, body: null };
+        return server.start()
+        .then(() => {
+            preq.get({ uri: 'http://127.0.0.1:12345' });
+        })
+        .delay(1000)
+        .then(() => {
+            preq.get({ uri: 'http://127.0.0.1:9000' })
+            .then((res) => {
+                response.status = res.status;
+                response.body = res.body;
+            });
+        })
+        .delay(1000)
+        .then(() => {
+            assert.strictEqual(response.status, 200, 'Must get 200 response');
+            assert.ok(
+                response.body.indexOf('hitcount{worker_id="0"} 1') !== -1,
+                'Must register the hit in prometheus output.'
+            );
+        })
+        .finally(() => server.stop());
+    });
+
+    it('Must increment hitcount metrics when hit, one worker', () => {
+        const server = new TestServer(`${__dirname}/../utils/simple_config_one_worker.yaml`);
+        const response = { status: null, body: null };
+        return server.start()
+        .then(() => {
+            preq.get({ uri: 'http://127.0.0.1:12345' });
+        })
+        .delay(1000)
+        .then(() => {
+            preq.get({ uri: 'http://127.0.0.1:9000' })
+            .then((res) => {
+                response.status = res.status;
+                response.body = res.body;
+            });
+        })
+        .delay(1000)
+        .then(() => {
+            assert.strictEqual(response.status, 200, 'Must get 200 response');
+            assert.ok(
+                response.body.indexOf('hitcount{worker_id="1"} 1') !== -1,
+                'Must register the hit in prometheus output.'
+            );
+        })
+        .finally(() => server.stop());
+    });
+
+    it('Must increment hitcount metrics when hit, two workers', () => {
+        const server = new TestServer(`${__dirname}/../utils/simple_config_two_workers.yaml`);
+        const response = { status: null, body: null };
+        return server.start()
+        .then(() => {
+            preq.get({ uri: 'http://127.0.0.1:12345' });
+        })
+        .delay(1000)
+        .then(() => {
+            preq.get({ uri: 'http://127.0.0.1:9000' })
+            .then((res) => {
+                response.status = res.status;
+                response.body = res.body;
+            });
+        })
+        .delay(1000)
+        .then(() => {
+            assert.strictEqual(response.status, 200, 'Must get 200 response');
+            assert.ok(
+                response.body.indexOf('hitcount{worker_id="1"} 1') !== -1,
+                'Must register the hit in prometheus output.'
+            );
+        })
+        .finally(() => server.stop());
+    });
+
 }, 'service-runner tests');
