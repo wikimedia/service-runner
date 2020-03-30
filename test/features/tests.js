@@ -124,7 +124,7 @@ describe('service-runner tests', () => {
         .then(() => {
             assert.strictEqual(response.status, 200, 'Must get 200 response');
             assert.ok(
-                response.body.indexOf('hitcount{worker_id="0"} 1') !== -1,
+                response.body.indexOf('service_runner_hitcount{worker_id="0"} 1') !== -1,
                 'Must register the hit in prometheus output.'
             );
         })
@@ -150,7 +150,7 @@ describe('service-runner tests', () => {
         .then(() => {
             assert.strictEqual(response.status, 200, 'Must get 200 response');
             assert.ok(
-                response.body.indexOf('hitcount{worker_id="1"} 1') !== -1,
+                response.body.indexOf('service_runner_hitcount{worker_id="1"} 1') !== -1,
                 'Must register the hit in prometheus output.'
             );
         })
@@ -176,7 +176,7 @@ describe('service-runner tests', () => {
         .then(() => {
             assert.strictEqual(response.status, 200, 'Must get 200 response');
             assert.ok(
-                response.body.indexOf('hitcount{worker_id="1"} 1') !== -1,
+                response.body.indexOf('service_runner_hitcount{worker_id="1"} 1') !== -1,
                 'Must register the hit in prometheus output.'
             );
         })
