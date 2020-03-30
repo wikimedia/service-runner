@@ -21,7 +21,7 @@ module.exports = (options) => {
             type: 'Counter',
             name: 'simple_server.hitcount.total',
             prometheus: {
-                name: 'hitcount_total',
+                name: 'hitcount total',
                 help: 'a hit counter'
             }
         }).increment();
