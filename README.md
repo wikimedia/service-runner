@@ -147,6 +147,8 @@ logging:
   sampled_levels:
     'trace/webrequest': 0.2
   streams:
+  - type: stdout # log to stdout
+    named_levels: true # emit log level name instead of index. e.g. INFO vs 30
   # Use gelf-stream -> logstash
   - type: gelf
     host: logstash1003.eqiad.wmnet
