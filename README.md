@@ -134,7 +134,7 @@ num_workers: ncpu
 startup_concurrency: 2
 
 # Number of milliseconds to wait for a heartbeat from worker before killing
-# and restarting it
+# and restarting a worker. 'false' means disabling the heartbeat feature. 
 worker_heartbeat_timeout: 7500
 
 # Logger info
