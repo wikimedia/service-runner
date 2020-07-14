@@ -46,7 +46,7 @@
     "yargs": "^14.2.2"
   },
   "optionalDependencies": {
-    "gc-stats": "^1.4.0",
+    "gc-stats": "git+https://github.com/dainis/node-gcstats.git#5be60dfd24293d6cefbc8a459c1537611373fac5",
     "heapdump": "^0.3.15"
   },
   "devDependencies": {
