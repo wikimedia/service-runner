@@ -1,0 +1,17 @@
+{
+	"root": true,
+	"extends": [
+		"wikimedia/server"
+	],
+	"rules": {
+		"array-bracket-spacing": "off",
+		"camelcase": "off",
+		"computed-property-spacing": "off",
+		"indent": [ "off" ],
+		"no-console": "off",
+		"no-shadow": "off",
+		"no-use-before-define": "off",
+		"no-underscore-dangle": "off",
+		"space-in-parens": "off"
+	}
+}
