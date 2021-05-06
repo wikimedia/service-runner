@@ -41,7 +41,7 @@
     "gelf-stream": "^1.1.1",
     "hot-shots": "^6.8.7",
     "js-yaml": "^3.13.1",
-    "limitation": "^0.2.1",
+    "limitation": "^0.2.2",
     "lodash.clonedeep": "^4.5.0",
     "prom-client": "^11.5.3",
     "semver": "^7.1.2",
