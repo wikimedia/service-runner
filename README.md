@@ -60,13 +60,12 @@ In package.json, configure `npm start` to call service-runner:
 Create a `config.yaml` file following the spec below. Make sure to point the
 module parameter to your service's entry point.
 
-Finally, **start your service with `npm start`**. In npm >= 2.0 (node 0.12 or iojs), you can also pass parameters to `service-runner` like this: `npm start -- -c /etc/yourservice/config.yaml`.
+Finally, **start your service with `npm start`**. You can also pass parameters to `service-runner` like this: `npm start -- -c /etc/yourservice/config.yaml`.
 
 ### As a library
 
 Service-runner can also be used to run services within an application. This is
-useful for node 0.10 support, but can also be used to run services for testing
-or other purposes.
+can also be used to run services for testing or other purposes.
 
 Example script for **starting** a service, using commandline options:
 
@@ -328,8 +327,7 @@ project](https://phabricator.wikimedia.org/tag/service-runner/).
 
 ## See also
 - https://github.com/Unitech/PM2 - A lot of features. Focus on interactive
-    use with commandline tools. Weak on logging (only local log files). Does
-    not support node 0.10's cluster module.
+    use with commandline tools. Weak on logging (only local log files).
 - https://github.com/strongloop/strong-agent - commercial license. Focus on
     profiling and monitoring, although a lot of the functionality is now
     available in other libraries.

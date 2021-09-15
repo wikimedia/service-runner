@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "2.9.0",
+  "version": "3.0.0",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -10,7 +10,7 @@
     "postpublish": "git tag -a \"v${npm_package_version}\" -m \"${npm_package_name}@${npm_package_version} release\" && git push upstream \"v${npm_package_version}\"",
     "start": "./service-runner.js",
     "test": "npm run lint && mocha",
-    "lint": "eslint --cache --max-warnings 0 --ext .js .",
+    "lint": "eslint --cache --max-warnings 0 --ext .js,.json .",
     "coverage": "npm run lint && nyc --reporter=lcov mocha",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/wikimedia/service-runner",
   "engines": {
-    "node": ">=6"
+    "node": ">=10"
   },
   "dependencies": {
     "bluebird": "^3.7.2",
@@ -45,6 +45,7 @@
     "lodash.clonedeep": "^4.5.0",
     "prom-client": "^11.5.3",
     "semver": "^7.1.2",
+    "tar": "^4.4.16",
     "yargs": "^14.2.2"
   },
   "optionalDependencies": {
@@ -54,8 +55,8 @@
   "devDependencies": {
     "@ojolabs/bunyan-prettystream": "^0.1.6",
     "coveralls": "^3.0.9",
-    "eslint": "^5.16.0",
-    "eslint-config-wikimedia": "^0.14.3",
+    "eslint": "7.24.0",
+    "eslint-config-wikimedia": "0.20.0",
     "eslint-plugin-json": "^2.1.2",
     "mocha": "^6.2.2",
     "mocha-lcov-reporter": "^1.3.0",
