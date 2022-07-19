@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/wikimedia/service-runner",
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "dependencies": {
     "bluebird": "^3.7.2",
