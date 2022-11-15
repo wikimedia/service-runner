@@ -1,6 +1,6 @@
 {
   "name": "service-runner",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "description": "Generic nodejs service supervisor / cluster runner",
   "main": "service-runner.js",
   "bin": {
@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/wikimedia/service-runner",
   "engines": {
-    "node": ">=10"
+    "node": ">=12"
   },
   "dependencies": {
     "bluebird": "^3.7.2",
@@ -46,7 +46,7 @@
     "prom-client": "^11.5.3",
     "semver": "^7.1.2",
     "tar": "^4.4.16",
-    "yargs": "^16.2.0"
+    "yargs": "^17.3.1"
   },
   "optionalDependencies": {
     "heapdump": "^0.3.15"
@@ -54,10 +54,10 @@
   "devDependencies": {
     "@ojolabs/bunyan-prettystream": "^0.1.6",
     "coveralls": "^3.0.9",
-    "eslint": "7.24.0",
-    "eslint-config-wikimedia": "0.20.0",
+    "eslint": "7.32.0",
+    "eslint-config-wikimedia": "0.21.0",
     "eslint-plugin-json": "^2.1.2",
-    "mocha": "^6.2.2",
+    "mocha": "^9.1.4",
     "mocha-lcov-reporter": "^1.3.0",
     "nyc": "^15.0.0",
     "preq": "^0.5.11"
