@@ -12,4 +12,3 @@ services:
     module: test/utils/simple_server.js
     conf:
       port: 12345
-
