@@ -11,6 +11,7 @@
 		"no-underscore-dangle": "off",
 		"no-use-before-define": "off",
 		"es-x/no-hashbang": "off",
+		"n/no-process-exit": "off",
 		"jsdoc/newline-after-description": "off"
 	}
 }
