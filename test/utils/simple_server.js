@@ -26,7 +26,7 @@ module.exports = ( options ) => {
 			}
 		} ).increment();
 		// deprecated interface
-		options.metrics.increment( `simple_server.deprecated_interface.worker_${options.config.worker_id}.hitcount` );
+		options.metrics.increment( `simple_server.deprecated_interface.worker_${ options.config.worker_id }.hitcount` );
 		res.end( 'ok\n' );
 	} );
 	return new P( ( resolve, reject ) => {

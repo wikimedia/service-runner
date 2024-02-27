@@ -56,8 +56,13 @@ class ServiceRunner {
 			} );
 	}
 
-	static getLogger( loggerConf ) { return new Logger( loggerConf ); }
-	static getMetrics( metricsConf, logger ) { return makeMetrics( metricsConf, logger ); }
+	static getLogger( loggerConf ) {
+		return new Logger( loggerConf );
+	}
+
+	static getMetrics( metricsConf, logger ) {
+		return makeMetrics( metricsConf, logger );
+	}
 }
 
 module.exports = ServiceRunner;

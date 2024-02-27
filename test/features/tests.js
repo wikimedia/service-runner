@@ -8,7 +8,7 @@ const assert = require( 'assert' );
 
 describe( 'service-runner tests', () => {
 	it( 'Must start and stop a simple service, no workers', () => {
-		const server = new TestServer( `${__dirname}/../utils/simple_config_no_workers.yaml` );
+		const server = new TestServer( `${ __dirname }/../utils/simple_config_no_workers.yaml` );
 		return server.start()
 			.then( () => {
 				assert.strictEqual( Object.keys( cluster.workers ).length, 0, 'Must have 0 workers' );
@@ -17,7 +17,7 @@ describe( 'service-runner tests', () => {
 	} );
 
 	it( 'Must start and stop a simple service, one worker', () => {
-		const server = new TestServer( `${__dirname}/../utils/simple_config_one_worker.yaml` );
+		const server = new TestServer( `${ __dirname }/../utils/simple_config_one_worker.yaml` );
 		return server.start()
 			.then( () => {
 				assert.strictEqual( Object.keys( cluster.workers ).length, 1, 'Must have 1 worker' );
@@ -26,7 +26,7 @@ describe( 'service-runner tests', () => {
 	} );
 
 	it( 'Must start and stop a simple service, two workers', () => {
-		const server = new TestServer( `${__dirname}/../utils/simple_config_two_workers.yaml` );
+		const server = new TestServer( `${ __dirname }/../utils/simple_config_two_workers.yaml` );
 		return server.start()
 			.then( () => {
 				assert.strictEqual( Object.keys( cluster.workers ).length, 2, 'Must have 2 workers' );
@@ -35,7 +35,7 @@ describe( 'service-runner tests', () => {
 	} );
 
 	it( 'Must restart a worker if it dies', () => {
-		const server = new TestServer( `${__dirname}/../utils/simple_config_one_worker.yaml` );
+		const server = new TestServer( `${ __dirname }/../utils/simple_config_one_worker.yaml` );
 		let firstWorkerId;
 		return server.start()
 			.then( () => {
@@ -54,7 +54,7 @@ describe( 'service-runner tests', () => {
 	} );
 
 	it( 'Must support rolling restart on SIGHUP', () => {
-		const server = new TestServer( `${__dirname}/../utils/simple_config_two_workers.yaml` );
+		const server = new TestServer( `${ __dirname }/../utils/simple_config_two_workers.yaml` );
 		let firstWorkerIDs;
 		return server.start()
 			.then( () => {
@@ -68,7 +68,7 @@ describe( 'service-runner tests', () => {
 				assert.strictEqual( workerIDs.length, 2, 'Must have 2 workers after restart' );
 				workerIDs.forEach( ( id ) => {
 					assert.strictEqual( firstWorkerIDs.indexOf( id ), -1,
-						`Worker ${id} must have restarted` );
+						`Worker ${ id } must have restarted` );
 				} );
 			} )
 			.finally( () => server.stop() );
@@ -76,7 +76,7 @@ describe( 'service-runner tests', () => {
 
 	it( 'Must remove all listeners on stop', ( done ) => {
 		const DEFAULT_MAX_LISTENERS = require( 'events' ).EventEmitter.defaultMaxListeners;
-		const server = new TestServer( `${__dirname}/../utils/simple_config_two_workers.yaml` );
+		const server = new TestServer( `${ __dirname }/../utils/simple_config_two_workers.yaml` );
 		const warningListener = ( warning ) => {
 			if ( !done.called ) {
 				done.called = true;
@@ -106,7 +106,7 @@ describe( 'service-runner tests', () => {
 	// preq prevents the AssertionErrors from surfacing and failing the test
 	// performing the test this way presents them correctly
 	it( 'Must increment hitcount metrics when hit, no workers', () => {
-		const server = new TestServer( `${__dirname}/../utils/simple_config_no_workers.yaml` );
+		const server = new TestServer( `${ __dirname }/../utils/simple_config_no_workers.yaml` );
 		const response = { status: null, body: null };
 		return server.start()
 			.then( () => {
@@ -132,7 +132,7 @@ describe( 'service-runner tests', () => {
 	} );
 
 	it( 'Must increment hitcount metrics when hit, one worker', () => {
-		const server = new TestServer( `${__dirname}/../utils/simple_config_one_worker.yaml` );
+		const server = new TestServer( `${ __dirname }/../utils/simple_config_one_worker.yaml` );
 		const response = { status: null, body: null };
 		return server.start()
 			.then( () => {
@@ -158,7 +158,7 @@ describe( 'service-runner tests', () => {
 	} );
 
 	it( 'Must increment hitcount metrics when hit, two workers', () => {
-		const server = new TestServer( `${__dirname}/../utils/simple_config_two_workers.yaml` );
+		const server = new TestServer( `${ __dirname }/../utils/simple_config_two_workers.yaml` );
 		const response = { status: null, body: null };
 		return server.start()
 			.then( () => {
