@@ -1,6 +1,7 @@
-Unreleased
-==========
+v5.0.0 / 2024-02-27
+===================
 
+* Release v5.0.0 (James D. Forrester)
 * Bump various dependencies and devDependencies and drop support for node 14 (James D. Forrester)
 * build: Upgrade eslint-config-wikimedia to 0.25.1 and simplify config (James D. Forrester)
 * CI: Drop testing in Node 12 (#248) (James D. Forrester)
