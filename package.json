@@ -43,8 +43,9 @@
 		"js-yaml": "^3.13.1",
 		"limitation": "^0.2.3",
 		"lodash.clonedeep": "^4.5.0",
-		"prom-client": "^11.5.3",
+		"prom-client": "^12.0.0",
 		"semver": "^7.1.2",
+		"service-runner": "^3.1.0",
 		"tar": "^4.4.16",
 		"yargs": "^17.3.1"
 	},
