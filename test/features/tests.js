@@ -101,6 +101,28 @@ describe( 'service-runner tests', () => {
 			.finally( () => process.removeListener( 'warning', warningListener ) );
 	} );
 
+	it( 'Must produce prometheus default metrics when hit ', () => {
+		const server = new TestServer( `${__dirname}/../utils/simple_config_no_workers_collect_default.yaml` );
+		const response = { status: null, body: null };
+		return server.start()
+			.then( () => {
+				preq.get( { uri: 'http://127.0.0.1:9000' } )
+					.then( ( res ) => {
+						response.status = res.status;
+						response.body = res.body;
+					} );
+			} )
+			.delay( 1000 )
+			.then( () => {
+				// nodejs_version_info is reported by calls to prom-client.collectDefaultMetrics()
+				assert.ok(
+					response.body.includes( 'nodejs_version_info ' ),
+					'Must collect default metrics prometheus output.'
+				);
+			} )
+			.finally( () => server.stop() );
+	} );
+
 	// preq prevents the AssertionErrors from surfacing and failing the test
 	// performing the test this way presents them correctly
 	it( 'Must increment hitcount metrics when hit, no workers', () => {
