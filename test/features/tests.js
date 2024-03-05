@@ -1,10 +1,12 @@
 'use strict';
 
-const preq = require( 'preq' );
-
 const TestServer = require( '../TestServer' );
 const cluster = require( 'cluster' );
+const fetch = require( 'node-fetch' );
 const assert = require( 'assert' );
+const Bluebird = require( 'bluebird' );
+
+fetch.Promise = Bluebird;
 
 describe( 'service-runner tests', () => {
 	it( 'Must start and stop a simple service, no workers', () => {
@@ -103,18 +105,18 @@ describe( 'service-runner tests', () => {
 			.finally( () => process.removeListener( 'warning', warningListener ) );
 	} );
 
-	// preq prevents the AssertionErrors from surfacing and failing the test
+	// fetch prevents the AssertionErrors from surfacing and failing the test
 	// performing the test this way presents them correctly
 	it( 'Must increment hitcount metrics when hit, no workers', () => {
 		const server = new TestServer( `${ __dirname }/../utils/simple_config_no_workers.yaml` );
 		const response = { status: null, body: null };
 		return server.start()
 			.then( () => {
-				preq.get( { uri: 'http://127.0.0.1:12345' } );
+				fetch( { uri: 'http://127.0.0.1:12345' } );
 			} )
 			.delay( 1000 )
 			.then( () => {
-				preq.get( { uri: 'http://127.0.0.1:9000' } )
+				fetch( { uri: 'http://127.0.0.1:9000' } )
 					.then( ( res ) => {
 						response.status = res.status;
 						response.body = res.body;
@@ -136,11 +138,11 @@ describe( 'service-runner tests', () => {
 		const response = { status: null, body: null };
 		return server.start()
 			.then( () => {
-				preq.get( { uri: 'http://127.0.0.1:12345' } );
+				fetch( { uri: 'http://127.0.0.1:12345' } );
 			} )
 			.delay( 1000 )
 			.then( () => {
-				preq.get( { uri: 'http://127.0.0.1:9000' } )
+				fetch( { uri: 'http://127.0.0.1:9000' } )
 					.then( ( res ) => {
 						response.status = res.status;
 						response.body = res.body;
@@ -162,11 +164,11 @@ describe( 'service-runner tests', () => {
 		const response = { status: null, body: null };
 		return server.start()
 			.then( () => {
-				preq.get( { uri: 'http://127.0.0.1:12345' } );
+				fetch( { uri: 'http://127.0.0.1:12345' } );
 			} )
 			.delay( 1000 )
 			.then( () => {
-				preq.get( { uri: 'http://127.0.0.1:9000' } )
+				fetch( { uri: 'http://127.0.0.1:9000' } )
 					.then( ( res ) => {
 						response.status = res.status;
 						response.body = res.body;
