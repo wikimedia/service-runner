@@ -4,7 +4,7 @@ logging:
 metrics:
   - type: prometheus
     port: 9000
-    collect_default:  true
+    collect_default: true
   - type: statsd
     host: localhost
     port: 8125

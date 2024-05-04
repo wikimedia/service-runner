@@ -102,7 +102,7 @@ describe( 'service-runner tests', () => {
 	} );
 
 	it( 'Must produce prometheus default metrics when hit ', () => {
-		const server = new TestServer( `${__dirname}/../utils/simple_config_no_workers_collect_default.yaml` );
+		const server = new TestServer( `${ __dirname }/../utils/simple_config_no_workers_collect_default.yaml` );
 		const response = { status: null, body: null };
 		return server.start()
 			.then( () => {
