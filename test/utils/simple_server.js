@@ -30,7 +30,7 @@ module.exports = ( options ) => {
 		res.end( 'ok\n' );
 	} );
 	return new P( ( resolve, reject ) => {
-		server.listen( options.config.port, 'localhost', ( err ) => {
+		server.listen( options.config.port, '127.0.0.1', ( err ) => {
 			if ( err ) {
 				return reject( err );
 			}
