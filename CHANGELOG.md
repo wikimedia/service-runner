@@ -1,3 +1,16 @@
+v6.0.0 / 2024-11-01
+===================
+
+* Require node 18 or higher, update to 6.0.0 (Marielle Volz)
+* Upgrade prom-client from ^11.5.3 to ^12.0.0 (James D. Forrester)
+* Change from localhost to 127.0.0.1 in simple_server.js (Marielle Volz)
+* base_service: Suppress yargs's warning about using 'version' flags (James D. Forrester)
+* build: Update nodejs.yml to update set-up version (Marielle Volz)
+* build: Upgrade eslint-config-wikimedia to 0.28.2 and make pass (James D. Forrester)
+* build: Adjust micromatch version per npm audit (James D. Forrester)
+* CI: Add testing for Node 18 and Node 20 (James D. Forrester)
+* CI: Stop testing in Node 16.x, no longer supported by us (James D. Forrester)
+
 v5.0.0 / 2024-02-27
 ===================
 
