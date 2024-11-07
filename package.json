@@ -31,7 +31,7 @@
 	},
 	"homepage": "https://github.com/wikimedia/service-runner",
 	"engines": {
-		"node": ">=18"
+		"node": ">=20"
 	},
 	"dependencies": {
 		"bluebird": "^3.7.2",
