@@ -105,11 +105,13 @@ describe( 'service-runner tests', () => {
 		const server = new TestServer( `${ __dirname }/../utils/simple_config_no_workers_collect_default.yaml` );
 		const response = { status: null, body: null };
 		return server.start()
-			.then( () => {
-				preq.get( { uri: 'http://127.0.0.1:9000' } )
-					.then( ( res ) => {
+			.then( async () => {
+				// eslint-disable-next-line n/no-unsupported-features/node-builtins
+				await fetch( 'http://127.0.0.1:9000' )
+					.then( async ( res ) => {
 						response.status = res.status;
-						response.body = res.body;
+						// This is a ReadableStream of a Uint8Array, but we just want the string
+						response.body = new TextDecoder().decode( await res.arrayBuffer() );
 					} );
 			} )
 			.delay( 1000 )
@@ -123,8 +125,6 @@ describe( 'service-runner tests', () => {
 			.finally( () => server.stop() );
 	} );
 
-	// preq prevents the AssertionErrors from surfacing and failing the test
-	// performing the test this way presents them correctly
 	it( 'Must increment hitcount metrics when hit, no workers', () => {
 		const server = new TestServer( `${ __dirname }/../utils/simple_config_no_workers.yaml` );
 		const response = { status: null, body: null };
