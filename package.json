@@ -58,7 +58,6 @@
 		"eslint-config-wikimedia": "0.28.2",
 		"mocha": "^10.2.0",
 		"mocha-lcov-reporter": "^1.3.0",
-		"nyc": "^15.1.0",
-		"preq": "^0.5.14"
+		"nyc": "^15.1.0"
 	}
 }
