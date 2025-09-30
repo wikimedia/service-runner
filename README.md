@@ -1,6 +1,9 @@
 # service-runner
 Generic nodejs service runner & supervisor
 
+## ⚠ Deprecation Warning ⚠
+This software is deprecated and no longer maintained.  For an alternative, check out [service-utils](https://gitlab.wikimedia.org/repos/data-engineering/service-utils).
+
 ## Features
 - Supervise and [cluster](http://nodejs.org/api/cluster.html) node services in a generic manner with a minimal interface:
 
